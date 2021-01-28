@@ -1,0 +1,3 @@
+rootProject.name = 'jword'
+include 'jword-core'
+include 'jword-docx4j'

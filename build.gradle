@@ -1,0 +1,37 @@
+//所有项目共用，包括根项目
+allprojects {
+    //统一组名和版本，虽然目前没有卵用
+    group 'net.jsrbc'
+    version '1.0.0'
+}
+
+//所有子模块的公共依赖包
+subprojects {
+    //子项目添加插件，plugins DSL暂不支持在子项目管理中使用，所以采用传统方式引入插件
+    apply plugin: "java"
+    //Gradle配置完成后的回调
+    afterEvaluate {
+        //jdk版本管理
+        sourceCompatibility = JavaVersion.VERSION_15
+        //定义模块化
+        compileJava {
+            inputs.property("moduleName", moduleName)
+            doFirst {
+                options.compilerArgs = [
+                        "--module-path", classpath.asPath
+                ]
+                classpath = files()
+            }
+        }
+        //公共仓库，本地和阿里云优先
+        repositories {
+            mavenLocal()
+            maven {url "http://maven.aliyun.com/nexus/content/groups/public"}
+            mavenCentral()
+        }
+        //公共依赖包
+        dependencies {
+            implementation fileTree(dir: "libs", includes: ["*.jar"])
+        }
+    }
+}
