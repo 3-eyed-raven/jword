@@ -60,13 +60,13 @@ public class Docx4jParagraph implements Paragraph {
     /** {@inheritDoc} */
     @Override
     public void addText(String text) {
-        this.p.getContent().add(text(text));
+        this.p.getContent().add(createText(text));
     }
 
     /** {@inheritDoc} */
     @Override
     public void addStyledText(String styleId, String text) {
-        this.p.getContent().add(styledText(styleId, text));
+        this.p.getContent().add(createStyledText(styleId, text));
     }
 
     /** {@inheritDoc} */

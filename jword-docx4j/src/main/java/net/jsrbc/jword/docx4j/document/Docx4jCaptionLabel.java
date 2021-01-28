@@ -66,11 +66,11 @@ public class Docx4jCaptionLabel implements CaptionLabel {
         // 组成章节号段
         Collections.addAll(
                 chapterRuns,
-                fldBegin(),
-                instrText(String.format("STYLEREF %s \\s", chapterStyleId)),
-                fldSeparate(),
-                text(initialNumber),
-                fldEnd()
+                createFldBegin(),
+                createInstrText(String.format("STYLEREF %s \\s", chapterStyleId)),
+                createFldSeparate(),
+                createText(initialNumber),
+                createFldEnd()
         );
     }
 
@@ -89,14 +89,14 @@ public class Docx4jCaptionLabel implements CaptionLabel {
         // 组成编号段
         Collections.addAll(
                 sequenceRuns,
-                fldBegin(),
-                preserveInstrText("SEQ "),
+                createFldBegin(),
+                createPreserveInstrText("SEQ "),
                 labelRun,
-                preserveInstrText(String.format(" \\* ARABIC \\s %s", chapterStyleId)),
-                preserveInstrText(" "),
-                fldSeparate(),
-                text(String.valueOf(initialSeq)),
-                fldEnd()
+                createPreserveInstrText(String.format(" \\* ARABIC \\s %s", chapterStyleId)),
+                createPreserveInstrText(" "),
+                createFldSeparate(),
+                createText(String.valueOf(initialSeq)),
+                createFldEnd()
         );
     }
 
@@ -119,7 +119,7 @@ public class Docx4jCaptionLabel implements CaptionLabel {
         list.add(bookmarkStart);
         list.add(labelRun);
         list.addAll(chapterRuns);
-        list.add(noBreakHyphen());
+        list.add(createNoBreakHyphen());
         list.addAll(sequenceRuns);
         list.add(bookmarkEnd);
         return list;
