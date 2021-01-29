@@ -17,9 +17,6 @@ import java.nio.file.Path;
  */
 public class Docx4jDocument implements Document {
 
-    /** 文档来源 */
-    private final Path source;
-
     /** 文档包 */
     private final WordprocessingMLPackage wml;
 
@@ -35,7 +32,7 @@ public class Docx4jDocument implements Document {
     public static Docx4jDocument load(Path path) throws IOException {
         try {
             WordprocessingMLPackage wml = WordprocessingMLPackage.load(path.toFile());
-            return new Docx4jDocument(path, wml);
+            return new Docx4jDocument(wml);
         } catch (Docx4JException e) {
             throw new IOException(e);
         }
@@ -47,16 +44,6 @@ public class Docx4jDocument implements Document {
         if (!(paragraph instanceof Docx4jParagraph))
             throw new IllegalArgumentException("paragraph is not Docx4jParagraph");
         body.getContent().add(((Docx4jParagraph)paragraph).getParagraphOfDocx4j());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void save() throws IOException {
-        try {
-            this.wml.save(source.toFile());
-        } catch (Docx4JException e) {
-            throw new IOException(e);
-        }
     }
 
     /** {@inheritDoc} */
@@ -79,8 +66,7 @@ public class Docx4jDocument implements Document {
         }
     }
 
-    private Docx4jDocument(Path source, WordprocessingMLPackage wml) {
-        this.source = source;
+    private Docx4jDocument(WordprocessingMLPackage wml) {
         this.wml = wml;
         this.body = wml.getMainDocumentPart();
     }

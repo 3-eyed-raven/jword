@@ -6,6 +6,7 @@ package net.jsrbc.jword.core.document;
  * @version 1.0
  */
 public interface Paragraph {
+
     /**
      * 设置整个段落样式
      * @param styleId 段落样式ID
@@ -30,4 +31,10 @@ public interface Paragraph {
      * @param captionLabel 题注
      */
     void addCaptionLabel(CaptionLabel captionLabel);
+
+    /**
+     * 追加交叉引用
+     * @param reference 交叉引用
+     */
+    void addReference(Reference reference);
 }

@@ -18,11 +18,6 @@ public interface Document {
     void addParagraph(Paragraph paragraph);
 
     /**
-     * 保存文档
-     */
-    void save() throws IOException;
-
-    /**
      * 另存到目标地址
      * @param dest 目标地址
      */

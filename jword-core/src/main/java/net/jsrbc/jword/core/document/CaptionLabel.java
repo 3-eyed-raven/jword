@@ -15,14 +15,13 @@ public interface CaptionLabel {
     /**
      * 设置章节样式
      * @param chapterStyleId 章节起始样式ID
-     * @param initialNumber 初始编号，如：1.1.1
+     * @param chapterNumber 章节编号，如：1.1.1
      */
-    void setChapter(String chapterStyleId, String initialNumber);
+    void setChapter(String chapterStyleId, String chapterNumber);
 
     /**
      * 设置序号
-     * @param chapterStyleId 章节起始样式ID
-     * @param initialSeq 初始序号，如：3
+     * @param sequence 序号，如：3
      */
-    void setSequence(String chapterStyleId, int initialSeq);
+    void setSequence(int sequence);
 }

@@ -19,113 +19,132 @@ import static net.jsrbc.jword.docx4j.factory.Docx4jFactory.*;
  */
 public class Docx4jCaptionLabel implements CaptionLabel {
 
+    /** WML对象工厂 */
+    private final static ObjectFactory FACTORY = Context.getWmlObjectFactory();
+
     /** 书签ID */
     private final long bookmarkId;
 
     /** 书签名 */
     private final String bookmarkName;
 
-    /** WML对象工厂 */
-    private final ObjectFactory factory = Context.getWmlObjectFactory();
+    /** 标签 */
+    private String label;
 
-    /** 题注标签 */
-    private final R labelRun = factory.createR();
+    /** 章节起始样式ID */
+    private String chapterStyleId;
 
-    /** 包含章节号 */
-    private final List<R> chapterRuns = new ArrayList<>();
+    /** 章节号 */
+    private String chapterNumber;
 
-    /** 编号方式 */
-    private final List<R> sequenceRuns = new ArrayList<>();
-
-    /**
-     * 创建题注
-     * @param bookmarkId 题注ID
-     * @param bookmarkName 题注名
-     * @return 题注
-     */
-    public static Docx4jCaptionLabel create(long bookmarkId, String bookmarkName) {
-        return new Docx4jCaptionLabel(bookmarkId, bookmarkName);
-    }
+    /** 序号 */
+    private Integer sequence;
 
     /** {@inheritDoc} */
     @Override
     public void setLabel(String label) {
-        // 先清除题注标签段
-        labelRun.getContent().clear();
-        // 添加题注文字
-        Text text = factory.createText();
-        text.setValue(label);
-        labelRun.getContent().add(text);
+        this.label = label;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setChapter(String chapterStyleId, String initialNumber) {
-        // 先清除章节段
-        chapterRuns.clear();
-        // 组成章节号段
-        Collections.addAll(
-                chapterRuns,
-                createFldBegin(),
-                createInstrText(String.format("STYLEREF %s \\s", chapterStyleId)),
-                createFldSeparate(),
-                createText(initialNumber),
-                createFldEnd()
-        );
+    public void setChapter(String chapterStyleId, String chapterNumber) {
+        this.chapterStyleId = chapterStyleId;
+        this.chapterNumber = chapterNumber;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setSequence(String chapterStyleId, int initialSeq) {
-        // 先清除序号段
-        sequenceRuns.clear();
-        // 序号关联
-        R seqRun = factory.createR();
-        Text seqText = factory.createText();
-        seqText.setSpace("preserve");
-        seqText.setValue("SEQ ");
-        JAXBElement<Text> seqInstr = factory.createRInstrText(seqText);
-        seqRun.getContent().add(seqInstr);
-        // 组成编号段
-        Collections.addAll(
-                sequenceRuns,
-                createFldBegin(),
-                createPreserveInstrText("SEQ "),
-                labelRun,
-                createPreserveInstrText(String.format(" \\* ARABIC \\s %s", chapterStyleId)),
-                createPreserveInstrText(" "),
-                createFldSeparate(),
-                createText(String.valueOf(initialSeq)),
-                createFldEnd()
-        );
+    public void setSequence(int sequence) {
+        this.sequence = sequence;
     }
 
     /**
-     * 获取题注wml标签
+     * 获取书签名称
+     * @return 书签名称
+     */
+    public String getBookmarkName() {
+        return this.bookmarkName;
+    }
+
+    /**
+     * 获取题注标签
+     * @return 题注标签
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * 获取章节编号
+     * @return 章节编号
+     */
+    public String getChapterNumber() {
+        return chapterNumber;
+    }
+
+    /**
+     * 获取序号
+     * @return 序号
+     */
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    /**
+     * 获取题注DOCX4J对象
      * @return 题注对应的标签集合
      */
     public List<Object> getCaptionLabelOfDocx4j() {
         List<Object> list = new ArrayList<>();
-        // 书签开始
-        CTBookmark bookmark = factory.createCTBookmark();
+        // 组装结果
+        // 0、书签开始
+        CTBookmark bookmark = FACTORY.createCTBookmark();
         bookmark.setId(BigInteger.valueOf(this.bookmarkId));
         bookmark.setName(this.bookmarkName);
-        JAXBElement<CTBookmark> bookmarkStart = factory.createBodyBookmarkStart(bookmark);
-        // 书签结束
-        CTMarkupRange markupRange = factory.createCTMarkupRange();
-        markupRange.setId(BigInteger.valueOf(this.bookmarkId));
-        JAXBElement<CTMarkupRange> bookmarkEnd = factory.createBodyBookmarkEnd(markupRange);
-        // 组装结果
+        JAXBElement<CTBookmark> bookmarkStart = FACTORY.createBodyBookmarkStart(bookmark);
         list.add(bookmarkStart);
-        list.add(labelRun);
-        list.addAll(chapterRuns);
-        list.add(createNoBreakHyphen());
-        list.addAll(sequenceRuns);
+        // 1、题注
+        list.add(createText(this.label));
+        // 2、章节编号部分
+        if (this.chapterStyleId != null && this.chapterNumber != null) {
+            Collections.addAll(
+                    list,
+                    createFldBegin(),
+                    createInstrText(String.format("STYLEREF %s \\s", this.chapterStyleId)),
+                    createFldSeparate(),
+                    createText(this.chapterNumber),
+                    createFldEnd()
+            );
+            // 分隔符
+            list.add(createNoBreakHyphen()); // 有章节前缀再考虑加分隔符
+        }
+        // 3、编号部分
+        Collections.addAll(
+                list,
+                createFldBegin(),
+                createPreserveInstrText("SEQ "),
+                createText(this.label),
+                createPreserveInstrText(String.format(" \\* ARABIC \\s %s", this.chapterStyleId)),
+                createPreserveInstrText(" "),
+                createFldSeparate(),
+                createText(String.valueOf(this.sequence)),
+                createFldEnd()
+        );
+        // 4、书签结束
+        CTMarkupRange markupRange = FACTORY.createCTMarkupRange();
+        markupRange.setId(BigInteger.valueOf(this.bookmarkId));
+        JAXBElement<CTMarkupRange> bookmarkEnd = FACTORY.createBodyBookmarkEnd(markupRange);
         list.add(bookmarkEnd);
         return list;
     }
 
-    private Docx4jCaptionLabel(long bookmarkId, String bookmarkName) {
+    /**
+     * 创建题注
+     * @param bookmarkId 书签ID，文档内不能重复
+     * @param bookmarkName 书签名，文档内不能重复
+     */
+    public Docx4jCaptionLabel(long bookmarkId, String bookmarkName) {
         this.bookmarkId = bookmarkId;
         this.bookmarkName = bookmarkName;
     }

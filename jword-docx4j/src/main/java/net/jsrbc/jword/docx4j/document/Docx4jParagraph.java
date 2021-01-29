@@ -2,6 +2,7 @@ package net.jsrbc.jword.docx4j.document;
 
 import net.jsrbc.jword.core.document.CaptionLabel;
 import net.jsrbc.jword.core.document.Paragraph;
+import net.jsrbc.jword.core.document.Reference;
 import org.docx4j.jaxb.Context;
 import org.docx4j.wml.*;
 
@@ -14,44 +15,15 @@ import static net.jsrbc.jword.docx4j.factory.Docx4jFactory.*;
  */
 public class Docx4jParagraph implements Paragraph {
 
-    private final ObjectFactory factory = Context.getWmlObjectFactory();
+    private final static ObjectFactory FACTORY = Context.getWmlObjectFactory();
 
-    private final P p = factory.createP();
-
-    /** 创建空段落 */
-    public static Docx4jParagraph empty() {
-        return new Docx4jParagraph();
-    }
-
-    /**
-     * 根据文字创建段落
-     * @param text 文字
-     * @return 段落
-     */
-    public static Docx4jParagraph of(String text) {
-        Docx4jParagraph paragraph = new Docx4jParagraph();
-        paragraph.addText(text);
-        return paragraph;
-    }
-
-    /**
-     * 创建带样式的段落
-     * @param styleId 样式ID
-     * @param text 段落文字
-     * @return 段落
-     */
-    public static Docx4jParagraph of(String styleId, String text) {
-        Docx4jParagraph paragraph = new Docx4jParagraph();
-        paragraph.setStyleId(styleId);
-        paragraph.addText(text);
-        return paragraph;
-    }
+    private final P p = FACTORY.createP();
 
     /** {@inheritDoc} */
     @Override
     public void setStyleId(String styleId) {
-        PPr pPr = factory.createPPr();
-        PPrBase.PStyle style = factory.createPPrBasePStyle();
+        PPr pPr = FACTORY.createPPr();
+        PPrBase.PStyle style = FACTORY.createPPrBasePStyle();
         style.setVal(styleId);
         pPr.setPStyle(style);
         this.p.setPPr(pPr);
@@ -77,10 +49,16 @@ public class Docx4jParagraph implements Paragraph {
         this.p.getContent().addAll(((Docx4jCaptionLabel)captionLabel).getCaptionLabelOfDocx4j());
     }
 
-    /** 获取段落的WML对象 */
+    /** {@inheritDoc} */
+    @Override
+    public void addReference(Reference reference) {
+        if (!(reference instanceof Docx4jReference))
+            throw new IllegalArgumentException("reference is not Docx4jReference");
+        this.p.getContent().addAll(((Docx4jReference) reference).getReferenceOfDocx4j());
+    }
+
+    /** 获取段落的DOCX4J对象 */
     public P getParagraphOfDocx4j() {
         return p;
     }
-
-    private Docx4jParagraph() {}
 }
