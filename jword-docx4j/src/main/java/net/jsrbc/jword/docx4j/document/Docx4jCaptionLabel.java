@@ -40,6 +40,16 @@ public class Docx4jCaptionLabel implements CaptionLabel {
     /** 序号 */
     private Integer sequence;
 
+    /**
+     * 创建题注
+     * @param bookmarkId 书签ID，文档内不能重复，从0开始
+     * @param bookmarkName 书签名，文档内不能重复
+     */
+    public Docx4jCaptionLabel(long bookmarkId, String bookmarkName) {
+        this.bookmarkId = bookmarkId;
+        this.bookmarkName = bookmarkName;
+    }
+
     /** {@inheritDoc} */
     @Override
     public void setLabel(String label) {
@@ -137,15 +147,5 @@ public class Docx4jCaptionLabel implements CaptionLabel {
         JAXBElement<CTMarkupRange> bookmarkEnd = FACTORY.createBodyBookmarkEnd(markupRange);
         list.add(bookmarkEnd);
         return list;
-    }
-
-    /**
-     * 创建题注
-     * @param bookmarkId 书签ID，文档内不能重复
-     * @param bookmarkName 书签名，文档内不能重复
-     */
-    public Docx4jCaptionLabel(long bookmarkId, String bookmarkName) {
-        this.bookmarkId = bookmarkId;
-        this.bookmarkName = bookmarkName;
     }
 }

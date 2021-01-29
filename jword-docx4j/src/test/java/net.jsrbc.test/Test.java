@@ -33,32 +33,65 @@ public class Test {
 
     private static void testFrame() throws Throwable {
         Document document = Docx4jDocument.load(source);
-        Paragraph p1 = new Docx4jParagraph();
-        p1.setStyleId("1");
-        p1.addText("GY001 K1+94 GY田唐桥");
 
-        Paragraph p2 = new Docx4jParagraph();
-        p2.setStyleId("2");
-        p2.addText("总体情况");
-
-        document.addParagraph(p1);
-        document.addParagraph(p2);
-
-        // 添加题注
-        CaptionLabel captionLabel = new Docx4jCaptionLabel(1, "table1");
-        captionLabel.setChapter("2", "1.1");
-        captionLabel.setLabel("表");
-        captionLabel.setSequence(1);
         Paragraph p = new Docx4jParagraph();
-        p.setStyleId("afc");
-        p.addCaptionLabel(captionLabel);
+        p.setStyleId("1");
+        p.addText("GY001 K1+94 GY田唐桥");
+        document.addParagraph(p);
 
-        Paragraph pp = new Docx4jParagraph();
+        p = new Docx4jParagraph();
+        p.setStyleId("2");
+        p.addText("总体情况");
+        document.addParagraph(p);
+
+        CaptionLabel label1 = new Docx4jCaptionLabel(1, "bridgeTable");
+        label1.setLabel("表");
+        label1.setChapter("2", "1.1");
+        label1.setSequence(1);
+        CaptionLabel label2 = new Docx4jCaptionLabel(2, "frontImage");
+        label2.setLabel("图");
+        label2.setChapter("2", "1.1");
+        label2.setSequence(1);
+        CaptionLabel label3 = new Docx4jCaptionLabel(3, "sideImage");
+        label3.setLabel("图");
+        label3.setChapter("2", "1.1");
+        label3.setSequence(2);
+
+        p = new Docx4jParagraph();
+        p.setStyleId("a");
+        p.addText("GY田唐桥为单幅桥，相关信息如");
         Reference reference = new Docx4jReference();
-        reference.referTo(captionLabel);
-        pp.addReference(reference);
+        reference.referTo(label1);
+        p.addReference(reference);
+        p.addText("所示，桥梁正面照及侧面照如");
+        reference = new Docx4jReference();
+        reference.referTo(label2);
+        p.addReference(reference);
+        p.addText("与");
+        reference = new Docx4jReference();
+        reference.referTo(label3);
+        p.addReference(reference);
+        p.addText("所示。");
+        document.addParagraph(p);
 
-        document.addParagraph(pp);
+        p = new Docx4jParagraph();
+        p.setStyleId("a");
+        p.addText("本次检查GY田唐桥评分为81分，等级为2类。");
+        document.addParagraph(p);
+
+        p = new Docx4jParagraph();
+        p.setStyleId("afc");
+        p.addCaptionLabel(label1);
+        document.addParagraph(p);
+
+        p = new Docx4jParagraph();
+        p.setStyleId("afc");
+        p.addCaptionLabel(label2);
+        document.addParagraph(p);
+
+        p = new Docx4jParagraph();
+        p.setStyleId("afc");
+        p.addCaptionLabel(label3);
         document.addParagraph(p);
 
         document.saveAs(dest);
