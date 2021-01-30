@@ -1,20 +1,13 @@
 package net.jsrbc.test;
 
-import net.jsrbc.jword.core.document.CaptionLabel;
+import net.jsrbc.jword.core.document.*;
 import net.jsrbc.jword.core.document.Document;
-import net.jsrbc.jword.core.document.Paragraph;
-import net.jsrbc.jword.core.document.Reference;
-import net.jsrbc.jword.docx4j.document.Docx4jCaptionLabel;
-import net.jsrbc.jword.docx4j.document.Docx4jDocument;
-import net.jsrbc.jword.docx4j.document.Docx4jParagraph;
-import net.jsrbc.jword.docx4j.document.Docx4jReference;
+import net.jsrbc.jword.core.document.enums.HeaderFooterType;
+import net.jsrbc.jword.core.document.enums.PageSize;
+import net.jsrbc.jword.docx4j.document.*;
 import org.docx4j.jaxb.Context;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.wml.*;
 
-import javax.xml.bind.JAXBElement;
-import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -26,9 +19,11 @@ public class Test {
 
     private final static Path source = Paths.get("C:/Users/ZZZ/Desktop/template.docx");
     private final static Path dest = Paths.get("C:/Users/ZZZ/Desktop/test.docx");
+    private final static ObjectFactory FACTORY = Context.getWmlObjectFactory();
 
     public static void main(String[] args) throws Throwable {
         testFrame();
+//        testRaw();
     }
 
     private static void testFrame() throws Throwable {
@@ -43,6 +38,20 @@ public class Test {
         p.setStyleId("2");
         p.addText("总体情况");
         document.addParagraph(p);
+
+        Section firstSection = new Docx4jSection();
+        firstSection.addHeaderReference("rId9", HeaderFooterType.DEFAULT);
+        firstSection.addFooterReference("rId11", HeaderFooterType.DEFAULT);
+        firstSection.setPageSize(PageSize.A4);
+        firstSection.setPageMargin(1418, 1418, 1418, 1418);
+        firstSection.setHeaderMargin(851);
+        firstSection.setFooterMargin(851);
+
+        Section defaultSection = new Docx4jSection();
+        defaultSection.setPageSize(PageSize.A4);
+        defaultSection.setPageMargin(1418, 1418, 1418, 1418);
+        defaultSection.setHeaderMargin(851);
+        defaultSection.setFooterMargin(851);
 
         CaptionLabel label1 = new Docx4jCaptionLabel(1, "bridgeTable");
         label1.setLabel("表");
@@ -74,93 +83,39 @@ public class Test {
         p.addText("所示。");
         document.addParagraph(p);
 
+        p.setSection(firstSection);
+
         p = new Docx4jParagraph();
         p.setStyleId("a");
         p.addText("本次检查GY田唐桥评分为81分，等级为2类。");
         document.addParagraph(p);
 
         p = new Docx4jParagraph();
+        p.setSection(defaultSection);
+        document.addParagraph(p);
+
+        p = new Docx4jParagraph();
         p.setStyleId("afc");
         p.addCaptionLabel(label1);
+        p.addText("  桥梁基本信息一览表");
         document.addParagraph(p);
 
         p = new Docx4jParagraph();
         p.setStyleId("afc");
         p.addCaptionLabel(label2);
+        p.addText("  桥梁正面照");
         document.addParagraph(p);
 
         p = new Docx4jParagraph();
         p.setStyleId("afc");
         p.addCaptionLabel(label3);
+        p.addText("  桥梁侧面照");
         document.addParagraph(p);
+
+        document.addSection(defaultSection);
 
         document.saveAs(dest);
     }
 
-    private static void testRaw() throws Throwable {
-        WordprocessingMLPackage wml = WordprocessingMLPackage.load(source.toFile());
-        MainDocumentPart body = wml.getMainDocumentPart();
-        body.addStyledParagraphOfText("1", "GY001 K1+94 GY田唐桥");
-        // 添加书签
-        ObjectFactory factory = Context.getWmlObjectFactory();
-        P p = body.addParagraphOfText("");
-        PPr pPr = factory.createPPr();
-        PPrBase.PStyle pStyle = factory.createPPrBasePStyle();
-        pStyle.setVal("afc");
-        pPr.setPStyle(pStyle);
-        p.setPPr(pPr);
-        // 书签开始
-        CTBookmark start = factory.createCTBookmark();
-        start.setId(BigInteger.ZERO);
-        start.setName("_Ref62722846");
-        JAXBElement<CTBookmark> s = factory.createBodyBookmarkStart(start);
-        //标签
-        R title = factory.createR();
-        Text text = factory.createText();
-        text.setValue("表");
-        title.getContent().add(text);
-        //编号
-        R frstart = factory.createR();
-        FldChar fstart = factory.createFldChar();
-        fstart.setFldCharType(STFldCharType.BEGIN);
-        frstart.getContent().add(fstart);
-
-        R number = factory.createR();
-        text = factory.createText();
-        text.setValue("STYLEREF 1 \\s");
-        JAXBElement<Text> numberText = factory.createRInstrText(text);
-        number.getContent().add(numberText);
-
-        R sep1 = factory.createR();
-        FldChar sep1C = factory.createFldChar();
-        sep1C.setFldCharType(STFldCharType.SEPARATE);
-        sep1.getContent().add(sep1C);
-
-        R n = factory.createR();
-        text = factory.createText();
-        text.setValue("1");
-        n.getContent().add(text);
-
-        R frend = factory.createR();
-        FldChar fend = factory.createFldChar();
-        fend.setFldCharType(STFldCharType.END);
-        frend.getContent().add(fend);
-
-        // 书签结束
-        CTMarkupRange end = factory.createCTBookmark();
-        end.setId(BigInteger.ZERO);
-        JAXBElement<CTMarkupRange> e = factory.createBodyBookmarkEnd(end);
-
-        //书签内容加入段落
-        p.getContent().add(s);
-        p.getContent().add(title);
-        p.getContent().add(frstart);
-        p.getContent().add(number);
-        p.getContent().add(sep1);
-        p.getContent().add(n);
-        p.getContent().add(frend);
-        p.getContent().add(e);
-
-        wml.save(dest.toFile());
-    }
+    private static void testRaw() throws Throwable {}
 }

@@ -14,6 +14,12 @@ public interface Paragraph {
     void setStyleId(String styleId);
 
     /**
+     * 设置分节符
+     * @param section 分节符
+     */
+    void setSection(Section section);
+
+    /**
      * 追加段落文字
      * @param text 段落文字
      */

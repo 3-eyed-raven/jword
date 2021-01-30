@@ -18,6 +18,12 @@ public interface Document {
     void addParagraph(Paragraph paragraph);
 
     /**
+     * 添加分节符
+     * @param section 分节符
+     */
+    void addSection(Section section);
+
+    /**
      * 另存到目标地址
      * @param dest 目标地址
      */

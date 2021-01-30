@@ -59,6 +59,7 @@ public final class Docx4jFactory {
         R r = factory.createR();
         Text t = factory.createText();
         t.setValue(text);
+        t.setSpace("preserve");
         r.getContent().add(t);
         return r;
     }
@@ -79,6 +80,7 @@ public final class Docx4jFactory {
         // 设置文字
         Text txt = factory.createText();
         txt.setValue(text);
+        txt.setSpace("preserve");
         // 拼装
         r.setRPr(rPr);
         r.getContent().add(txt);

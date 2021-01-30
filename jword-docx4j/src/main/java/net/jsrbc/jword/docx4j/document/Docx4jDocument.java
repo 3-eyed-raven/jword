@@ -2,6 +2,7 @@ package net.jsrbc.jword.docx4j.document;
 
 import net.jsrbc.jword.core.document.Document;
 import net.jsrbc.jword.core.document.Paragraph;
+import net.jsrbc.jword.core.document.Section;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
@@ -43,7 +44,15 @@ public class Docx4jDocument implements Document {
     public void addParagraph(Paragraph paragraph) {
         if (!(paragraph instanceof Docx4jParagraph))
             throw new IllegalArgumentException("paragraph is not Docx4jParagraph");
-        body.getContent().add(((Docx4jParagraph)paragraph).getParagraphOfDocx4j());
+        this.body.getContent().add(((Docx4jParagraph)paragraph).getParagraphOfDocx4j());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void addSection(Section section) {
+        if (!(section instanceof Docx4jSection))
+            throw new IllegalArgumentException("section is not Docx4jSection");
+        this.body.getContent().add(((Docx4jSection) section).getSectionOfDocx4j());
     }
 
     /** {@inheritDoc} */

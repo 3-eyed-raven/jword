@@ -3,6 +3,7 @@ package net.jsrbc.jword.docx4j.document;
 import net.jsrbc.jword.core.document.CaptionLabel;
 import net.jsrbc.jword.core.document.Paragraph;
 import net.jsrbc.jword.core.document.Reference;
+import net.jsrbc.jword.core.document.Section;
 import org.docx4j.jaxb.Context;
 import org.docx4j.wml.*;
 
@@ -22,11 +23,18 @@ public class Docx4jParagraph implements Paragraph {
     /** {@inheritDoc} */
     @Override
     public void setStyleId(String styleId) {
-        PPr pPr = FACTORY.createPPr();
+        PPr pPr = getPpr();
         PPrBase.PStyle style = FACTORY.createPPrBasePStyle();
         style.setVal(styleId);
         pPr.setPStyle(style);
-        this.p.setPPr(pPr);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setSection(Section section) {
+        if (!(section instanceof Docx4jSection))
+            throw new IllegalArgumentException("section is not Docx4jSection");
+        getPpr().setSectPr(((Docx4jSection) section).getSectionOfDocx4j());
     }
 
     /** {@inheritDoc} */
@@ -60,5 +68,18 @@ public class Docx4jParagraph implements Paragraph {
     /** 获取段落的DOCX4J对象 */
     public P getParagraphOfDocx4j() {
         return p;
+    }
+
+    /**
+     * 获取段落属性
+     * @return 段落属性
+     */
+    private PPr getPpr() {
+        if (p.getPPr() == null) {
+            PPr pPr = FACTORY.createPPr();
+            p.setPPr(pPr);
+            return pPr;
+        }
+        return p.getPPr();
     }
 }
