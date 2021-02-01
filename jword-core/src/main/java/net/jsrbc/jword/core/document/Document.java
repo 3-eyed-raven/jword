@@ -12,6 +12,12 @@ import java.nio.file.Path;
 public interface Document {
 
     /**
+     * 添加表格
+     * @param table 表格
+     */
+    void addTable(Table table);
+
+    /**
      * 添加段落
      * @param paragraph 段落对象
      */

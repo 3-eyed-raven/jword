@@ -1,5 +1,7 @@
 package net.jsrbc.jword.core.document;
 
+import net.jsrbc.jword.core.document.enums.ParagraphJustification;
+
 /**
  * 段落对象
  * @author ZZZ on 2021/1/28 15:17
@@ -12,6 +14,12 @@ public interface Paragraph {
      * @param styleId 段落样式ID
      */
     void setStyleId(String styleId);
+
+    /**
+     * 设置段落对齐方式
+     * @param justification 对齐方式
+     */
+    void setJustification(ParagraphJustification justification);
 
     /**
      * 设置分节符

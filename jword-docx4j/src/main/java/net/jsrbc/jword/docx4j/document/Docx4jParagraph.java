@@ -4,6 +4,7 @@ import net.jsrbc.jword.core.document.CaptionLabel;
 import net.jsrbc.jword.core.document.Paragraph;
 import net.jsrbc.jword.core.document.Reference;
 import net.jsrbc.jword.core.document.Section;
+import net.jsrbc.jword.core.document.enums.ParagraphJustification;
 import org.docx4j.jaxb.Context;
 import org.docx4j.wml.*;
 
@@ -27,6 +28,15 @@ public class Docx4jParagraph implements Paragraph {
         PPrBase.PStyle style = FACTORY.createPPrBasePStyle();
         style.setVal(styleId);
         pPr.setPStyle(style);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setJustification(ParagraphJustification justification) {
+        PPr pPr = getPpr();
+        Jc jc = FACTORY.createJc();
+        jc.setVal(JcEnumeration.valueOf(justification.name()));
+        pPr.setJc(jc);
     }
 
     /** {@inheritDoc} */

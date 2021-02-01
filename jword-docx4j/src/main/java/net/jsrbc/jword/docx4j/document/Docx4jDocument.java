@@ -3,6 +3,7 @@ package net.jsrbc.jword.docx4j.document;
 import net.jsrbc.jword.core.document.Document;
 import net.jsrbc.jword.core.document.Paragraph;
 import net.jsrbc.jword.core.document.Section;
+import net.jsrbc.jword.core.document.Table;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
@@ -37,6 +38,14 @@ public class Docx4jDocument implements Document {
         } catch (Docx4JException e) {
             throw new IOException(e);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void addTable(Table table) {
+        if (!(table instanceof Docx4jTable))
+            throw new IllegalArgumentException("table is not Docx4jTable");
+        this.body.getContent().add(((Docx4jTable) table).getTableOfDocx4j());
     }
 
     /** {@inheritDoc} */

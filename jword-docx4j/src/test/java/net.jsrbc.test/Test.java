@@ -4,6 +4,7 @@ import net.jsrbc.jword.core.document.*;
 import net.jsrbc.jword.core.document.Document;
 import net.jsrbc.jword.core.document.enums.HeaderFooterType;
 import net.jsrbc.jword.core.document.enums.PageSize;
+import net.jsrbc.jword.core.document.enums.SectionType;
 import net.jsrbc.jword.docx4j.document.*;
 import org.docx4j.jaxb.Context;
 import org.docx4j.wml.*;
@@ -49,6 +50,7 @@ public class Test {
 
         Section defaultSection = new Docx4jSection();
         defaultSection.setPageSize(PageSize.A4);
+        defaultSection.setType(SectionType.CONTINUOUS);
         defaultSection.setPageMargin(1418, 1418, 1418, 1418);
         defaultSection.setHeaderMargin(851);
         defaultSection.setFooterMargin(851);
@@ -81,9 +83,8 @@ public class Test {
         reference.referTo(label3);
         p.addReference(reference);
         p.addText("所示。");
-        document.addParagraph(p);
-
         p.setSection(firstSection);
+        document.addParagraph(p);
 
         p = new Docx4jParagraph();
         p.setStyleId("a");
@@ -117,5 +118,6 @@ public class Test {
         document.saveAs(dest);
     }
 
-    private static void testRaw() throws Throwable {}
+    private static void testRaw() throws Throwable {
+    }
 }
