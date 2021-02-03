@@ -8,25 +8,25 @@ package net.jsrbc.jword.core.document.enums;
 public enum PageSize {
 
     /** A3纸张 */
-    A3(16838, 23811, 8),
+    A3(29.7, 42, 8),
 
     /** A4纸张 */
-    A4(11906, 16838, 9),
+    A4(21, 29.7, 9),
 
     /** A5纸张 */
-    A5(8391, 11906, 11)
+    A5(14.8, 21, 11)
     ;
 
-    /** 纸张宽度，单位：Twips */
-    private final int width;
+    /** 纸张宽度，单位：cm */
+    private final double width;
 
-    /** 纸张高度，单位：Twips */
-    private final int height;
+    /** 纸张高度，单位：cm */
+    private final double height;
 
     /** 尺寸编码 */
     private final int code;
 
-    PageSize(int width, int height, int code) {
+    PageSize(double width, double height, int code) {
         this.width = width;
         this.height = height;
         this.code = code;
@@ -36,7 +36,7 @@ public enum PageSize {
      * 获取纸张宽度，单位：Twips
      * @return 获取纸张宽度
      */
-    public int getWidth() {
+    public double getWidth() {
         return width;
     }
 
@@ -44,7 +44,7 @@ public enum PageSize {
      * 获取纸张高度，单位：Twips
      * @return 获取纸张高度
      */
-    public int getHeight() {
+    public double getHeight() {
         return height;
     }
 

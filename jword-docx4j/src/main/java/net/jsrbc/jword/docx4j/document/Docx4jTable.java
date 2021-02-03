@@ -9,6 +9,8 @@ import org.docx4j.wml.*;
 
 import java.math.BigInteger;
 
+import static net.jsrbc.jword.docx4j.util.UnitConverter.*;
+
 /**
  * DOCX4J表格
  * @author ZZZ on 2021/2/1 21:53
@@ -28,9 +30,13 @@ public class Docx4jTable implements Table {
     }
 
     @Override
-    public void setWidth(int width, TableWidthType type) {
+    public void setWidth(double width, TableWidthType type) {
         TblWidth tblWidth = FACTORY.createTblWidth();
-        tblWidth.setW(BigInteger.valueOf(width));
+        switch (type) {
+            case DXA -> tblWidth.setW(BigInteger.valueOf(cmToTwips(width)));
+            case PCT -> tblWidth.setW(BigInteger.valueOf(percentToFifthPct(width)));
+            default -> tblWidth.setW(BigInteger.ZERO);
+        }
         tblWidth.setType(type.getValue());
         getTblPr().setTblW(tblWidth);
     }

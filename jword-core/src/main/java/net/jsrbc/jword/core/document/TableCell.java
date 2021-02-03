@@ -16,7 +16,7 @@ public interface TableCell {
      * @param width 单元格宽度
      * @param widthType 宽度类型
      */
-    void setCellWidth(int width, TableWidthType widthType);
+    void setCellWidth(double width, TableWidthType widthType);
 
     /**
      * 设置单元格行级合并

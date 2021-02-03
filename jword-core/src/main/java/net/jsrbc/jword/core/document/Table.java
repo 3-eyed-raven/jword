@@ -17,11 +17,11 @@ public interface Table {
     void setStyle(String styleId);
 
     /**
-     * 设置表格宽度，推荐使用PCT的宽度类型
+     * 设置表格宽度
      * @param width 宽度，如果宽度类型为auto，宽度则初始为0
      * @param type 宽度类型
      */
-    void setWidth(int width, TableWidthType type);
+    void setWidth(double width, TableWidthType type);
 
     /**
      * 设置表格对齐方式

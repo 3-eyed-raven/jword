@@ -10,6 +10,8 @@ import org.docx4j.wml.*;
 
 import java.math.BigInteger;
 
+import static net.jsrbc.jword.docx4j.util.UnitConverter.*;
+
 /**
  * DOCX4J分节符
  * @author ZZZ on 2021/1/30 11:16
@@ -32,8 +34,8 @@ public class Docx4jSection implements Section {
     public void setPageSize(PageSize pageSize) {
         SectPr.PgSz pgSz = getPgSz();
         pgSz.setCode(BigInteger.valueOf(pageSize.getCode()));
-        pgSz.setW(BigInteger.valueOf(pageSize.getWidth()));
-        pgSz.setH(BigInteger.valueOf(pageSize.getHeight()));
+        pgSz.setW(BigInteger.valueOf(cmToTwips(pageSize.getWidth())));
+        pgSz.setH(BigInteger.valueOf(cmToTwips(pageSize.getHeight())));
     }
 
     @Override
@@ -43,24 +45,24 @@ public class Docx4jSection implements Section {
     }
 
     @Override
-    public void setPageMargin(int top, int right, int bottom, int left) {
+    public void setPageMargin(double top, double right, double bottom, double left) {
         SectPr.PgMar pgMar = getPgMar();
-        pgMar.setTop(BigInteger.valueOf(top));
-        pgMar.setRight(BigInteger.valueOf(right));
-        pgMar.setBottom(BigInteger.valueOf(bottom));
-        pgMar.setLeft(BigInteger.valueOf(left));
+        pgMar.setTop(BigInteger.valueOf(cmToTwips(top)));
+        pgMar.setRight(BigInteger.valueOf(cmToTwips(right)));
+        pgMar.setBottom(BigInteger.valueOf(cmToTwips(bottom)));
+        pgMar.setLeft(BigInteger.valueOf(cmToTwips(left)));
     }
 
     @Override
-    public void setHeaderMargin(int headerMargin) {
+    public void setHeaderMargin(double headerMargin) {
         SectPr.PgMar pgMar = getPgMar();
-        pgMar.setHeader(BigInteger.valueOf(headerMargin));
+        pgMar.setHeader(BigInteger.valueOf(cmToTwips(headerMargin)));
     }
 
     @Override
-    public void setFooterMargin(int footerMargin) {
+    public void setFooterMargin(double footerMargin) {
         SectPr.PgMar pgMar = getPgMar();
-        pgMar.setFooter(BigInteger.valueOf(footerMargin));
+        pgMar.setFooter(BigInteger.valueOf(cmToTwips(footerMargin)));
     }
 
     @Override

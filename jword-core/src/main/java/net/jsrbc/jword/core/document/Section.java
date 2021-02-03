@@ -31,25 +31,25 @@ public interface Section {
     void setPageOrientation(PageOrientation orientation);
 
     /**
-     * 设置页边距，单位：Twips
-     * @param top 上边距，单位：Twips
-     * @param right 右边距，单位：Twips
-     * @param bottom 下边距，单位：Twips
-     * @param left 左边距，单位：Twips
+     * 设置页边距，单位：cm
+     * @param top 上边距，单位：cm
+     * @param right 右边距，单位：cm
+     * @param bottom 下边距，单位：cm
+     * @param left 左边距，单位：cm
      */
-    void setPageMargin(int top, int right, int bottom, int left);
+    void setPageMargin(double top, double right, double bottom, double left);
 
     /**
      * 设置页眉距边界距离
-     * @param headerMargin 页眉距边界距离，单位：Twips
+     * @param headerMargin 页眉距边界距离，单位：cm
      */
-    void setHeaderMargin(int headerMargin);
+    void setHeaderMargin(double headerMargin);
 
     /**
      * 设置页脚距边界距离
-     * @param footerMargin 页脚距边界距离，单位：Twips
+     * @param footerMargin 页脚距边界距离，单位：cm
      */
-    void setFooterMargin(int footerMargin);
+    void setFooterMargin(double footerMargin);
 
     /**
      * 添加页眉引用

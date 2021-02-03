@@ -24,20 +24,38 @@ public interface Document {
     void addParagraph(Paragraph paragraph);
 
     /**
+     * 添加图片
+     * @param target 目标段落
+     * @param path 图片路径
+     * @param width 图片宽度，单位：cm
+     * @param height 图片高度，单位：cm
+     * @throws IOException 图片无法读取时报异常
+     */
+    void addDrawing(Paragraph target, Path path, double width, double height) throws IOException;
+
+    /**
      * 添加分节符
      * @param section 分节符
      */
     void addSection(Section section);
 
     /**
+     * 保存文档
+     * @throws IOException 文件无法打开时报异常
+     */
+    void save() throws IOException;
+
+    /**
      * 另存到目标地址
      * @param dest 目标地址
+     * @throws IOException 文件无法打开时报异常
      */
     void saveAs(Path dest) throws IOException;
 
     /**
      * 另存到目标地址
      * @param dest 输出流
+     * @throws IOException 文件无法打开时报异常
      */
     void saveAs(OutputStream dest) throws IOException;
 }
