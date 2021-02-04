@@ -1,3 +1,5 @@
 ext.moduleName = "net.jsrbc.jword.core"
 
-dependencies {}
+dependencies {
+    implementation 'io.projectreactor:reactor-core:3.4.2'
+}

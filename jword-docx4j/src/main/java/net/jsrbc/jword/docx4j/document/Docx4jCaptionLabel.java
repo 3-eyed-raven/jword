@@ -23,10 +23,10 @@ public class Docx4jCaptionLabel implements CaptionLabel {
     private final static ObjectFactory FACTORY = Context.getWmlObjectFactory();
 
     /** 书签ID */
-    private final long bookmarkId;
+    private long bookmarkId;
 
     /** 书签名 */
-    private final String bookmarkName;
+    private String bookmarkName;
 
     /** 标签 */
     private String label;
@@ -40,12 +40,9 @@ public class Docx4jCaptionLabel implements CaptionLabel {
     /** 序号 */
     private Integer sequence;
 
-    /**
-     * 创建题注
-     * @param bookmarkId 书签ID，文档内不能重复，从0开始
-     * @param bookmarkName 书签名，文档内不能重复
-     */
-    public Docx4jCaptionLabel(long bookmarkId, String bookmarkName) {
+    /** {@inheritDoc} */
+    @Override
+    public void setBookmark(long bookmarkId, String bookmarkName) {
         this.bookmarkId = bookmarkId;
         this.bookmarkName = bookmarkName;
     }

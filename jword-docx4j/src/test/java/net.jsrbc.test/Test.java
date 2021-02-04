@@ -1,14 +1,13 @@
 package net.jsrbc.test;
 
+import net.jsrbc.jword.core.Jword;
 import net.jsrbc.jword.core.document.*;
 import net.jsrbc.jword.core.document.Document;
 import net.jsrbc.jword.core.document.enums.*;
 import net.jsrbc.jword.docx4j.document.*;
-import net.jsrbc.jword.docx4j.util.UnitConverter;
+import net.jsrbc.jword.docx4j.factory.Docx4jJwordFactory;
 import org.docx4j.dml.CTNonVisualDrawingProps;
 import org.docx4j.dml.CTPositiveSize2D;
-import org.docx4j.dml.Graphic;
-import org.docx4j.dml.wordprocessingDrawing.CTEffectExtent;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -30,12 +29,33 @@ public class Test {
 
     private final static Path source = Paths.get("C:/Users/ZZZ/Desktop/template.docx");
     private final static Path dest = Paths.get("C:/Users/ZZZ/Desktop/test.docx");
-    private final static Path imagePath = Paths.get("C:/Users/ZZZ/Desktop/1.jpg");
+    private final static Path frontImage = Paths.get("C:/Users/ZZZ/Desktop/1.jpg");
+    private final static Path sideImage = Paths.get("C:/Users/ZZZ/Desktop/2.jpg");
     private final static ObjectFactory FACTORY = Context.getWmlObjectFactory();
 
     public static void main(String[] args) throws Throwable {
-        testFrame();
+        testFacade();
+//        testFrame();
 //        testRaw();
+    }
+
+    private static void testFacade() throws Exception {
+        Jword.create(new Docx4jJwordFactory())
+                .load(source)
+                .addParagraph("1", "GY001 K1+94 GY田唐桥")
+                .addParagraph("2", "总体情况")
+                .createCaptionLabel("bridgeTable", "表", "2", "1.1", 1)
+                .createCaptionLabel("frontImage", "图", "2", "1.1", 1)
+                .createCaptionLabel("sideImage" , "图", "2", "1.1", 2)
+                .addParagraph("a", "GY田唐桥为单幅桥，相关信息如")
+                .addReference("bridgeTable")
+                .addText("所示，桥梁正面照及侧面照如")
+                .addReference("frontImage").addText("与")
+                .addReference("sideImage").addText("所示")
+                .addParagraph("a", "本次检查GY田唐桥评分为81分，等级为2类。")
+                .addParagraph("afc", "")
+                .addCaptionLabel("bridgeTable").addText("  桥梁基本信息一览表")
+                .saveAs(dest, System.out::println, Throwable::printStackTrace, () -> System.out.println("完成"));
     }
 
     private static void testFrame() throws Throwable {
@@ -59,15 +79,18 @@ public class Test {
         firstSection.setHeaderMargin(1.5);
         firstSection.setFooterMargin(1.5);
 
-        CaptionLabel label1 = new Docx4jCaptionLabel(1, "bridgeTable");
+        CaptionLabel label1 = new Docx4jCaptionLabel();
+        label1.setBookmark(1, "bridgeTable");
         label1.setLabel("表");
         label1.setChapter("2", "1.1");
         label1.setSequence(1);
-        CaptionLabel label2 = new Docx4jCaptionLabel(2, "frontImage");
+        CaptionLabel label2 = new Docx4jCaptionLabel();
+        label2.setBookmark(2, "frontImage");
         label2.setLabel("图");
         label2.setChapter("2", "1.1");
         label2.setSequence(1);
-        CaptionLabel label3 = new Docx4jCaptionLabel(3, "sideImage");
+        CaptionLabel label3 = new Docx4jCaptionLabel();
+        label3.setBookmark(3, "sideImage");
         label3.setLabel("图");
         label3.setChapter("2", "1.1");
         label3.setSequence(2);
@@ -106,7 +129,7 @@ public class Test {
         p.setSection(firstSection);
         document.addParagraph(p);
 
-        document.addTable(createImageTable(label2, label3));
+        document.addTable(createImageTable(document, label2, label3));
 
         document.saveAs(dest);
     }
@@ -122,6 +145,8 @@ public class Test {
         Paragraph p = new Docx4jParagraph();
         p.setStyleId("ad");
         p.addText("路线名称");
+        cell.setVerticalMergeType(VerticalMergeType.RESTART);
+        cell.setVerticalAlignType(VerticalAlignType.CENTER);
         cell.addParagraph(p);
         tableRow.addCell(cell);
 
@@ -166,13 +191,13 @@ public class Test {
         tableRow.addCell(cell);
 
         table.addRow(tableRow);
-        //2=====================
+        //2===================================================
         tableRow = new Docx4jTableRow();
         cell = new Docx4jTableCell();
         cell.setCellWidth(16.6, TableWidthType.PCT);
         p = new Docx4jParagraph();
         p.setStyleId("ad");
-        p.addText("桥梁编码");
+        cell.setVerticalMergeType(VerticalMergeType.CONTINUE);
         cell.addParagraph(p);
         tableRow.addCell(cell);
 
@@ -398,7 +423,7 @@ public class Test {
         return table;
     }
 
-    private static Table createImageTable(CaptionLabel label1, CaptionLabel label2) {
+    private static Table createImageTable(Document document, CaptionLabel label1, CaptionLabel label2) throws Exception {
         Table table = new Docx4jTable();
         table.setStyle("a3");
         table.setWidth(100, TableWidthType.PCT);
@@ -407,12 +432,18 @@ public class Test {
 
         TableCell cell = new Docx4jTableCell();
         cell.setCellWidth(50, TableWidthType.PCT);
-        cell.addParagraph(new Docx4jParagraph());
+        Paragraph p = new Docx4jParagraph();
+        p.setStyleId("afc");
+        document.addDrawing(p, frontImage, 7.5, 5);
+        cell.addParagraph(p);
         tableRow.addCell(cell);
 
         cell = new Docx4jTableCell();
         cell.setCellWidth(50, TableWidthType.PCT);
-        cell.addParagraph(new Docx4jParagraph());
+        p = new Docx4jParagraph();
+        p.setStyleId("afc");
+        document.addDrawing(p, sideImage, 7.5, 5);
+        cell.addParagraph(p);
         tableRow.addCell(cell);
 
         table.addRow(tableRow);
@@ -421,7 +452,7 @@ public class Test {
 
         cell = new Docx4jTableCell();
         cell.setCellWidth(50, TableWidthType.PCT);
-        Paragraph p = new Docx4jParagraph();
+        p = new Docx4jParagraph();
         p.setStyleId("afc");
         p.addCaptionLabel(label1);
         p.addText("  桥梁正面照");
@@ -445,7 +476,7 @@ public class Test {
         WordprocessingMLPackage wml = WordprocessingMLPackage.load(source.toFile());
         MainDocumentPart mainPart = wml.getMainDocumentPart();
 
-        BinaryPartAbstractImage part = BinaryPartAbstractImage.createImagePart(wml, imagePath.toFile());
+        BinaryPartAbstractImage part = BinaryPartAbstractImage.createImagePart(wml, frontImage.toFile());
         Inline inline = part.createImageInline("a", "b", 1, 2, false);
 
         CTPositiveSize2D size = new CTPositiveSize2D();

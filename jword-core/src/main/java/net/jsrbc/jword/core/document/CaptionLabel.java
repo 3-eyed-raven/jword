@@ -6,6 +6,14 @@ package net.jsrbc.jword.core.document;
  * @version 1.0
  */
 public interface CaptionLabel {
+
+    /**
+     * 设置书签
+     * @param bookmarkId 书签ID，文档内应该唯一
+     * @param bookmarkName 书签名，文档内应该唯一
+     */
+    void setBookmark(long bookmarkId, String bookmarkName);
+
     /**
      * 设置题注标签
      * @param label 题注标签
@@ -21,7 +29,7 @@ public interface CaptionLabel {
 
     /**
      * 设置序号
-     * @param sequence 序号，如：3
+     * @param sequence 序号，如：1
      */
     void setSequence(int sequence);
 }

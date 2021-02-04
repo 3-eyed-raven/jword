@@ -2,8 +2,6 @@ package net.jsrbc.jword.core.document;
 
 import net.jsrbc.jword.core.document.enums.ParagraphJustification;
 
-import java.nio.file.Path;
-
 /**
  * 段落对象
  * @author ZZZ on 2021/1/28 15:17
