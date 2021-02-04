@@ -5,6 +5,8 @@ import net.jsrbc.jword.core.api.JwordLoader;
 import net.jsrbc.jword.core.document.*;
 import net.jsrbc.jword.core.document.enums.TableJustification;
 import net.jsrbc.jword.core.document.enums.TableWidthType;
+import net.jsrbc.jword.core.document.enums.VerticalAlignType;
+import net.jsrbc.jword.core.document.enums.VerticalMergeType;
 import net.jsrbc.jword.core.factory.AbstractJwordFactory;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
@@ -91,14 +93,7 @@ public class Jword implements JwordLoader, JwordOperator {
 
     @Override
     public JwordOperator createCaptionLabel(String bookmarkName, String label, int sequence) {
-        addCommand(() -> {
-            CaptionLabel captionLabel = factory.createCaptionLabel();
-            captionLabel.setBookmark(idGenerator.getAndIncrement(), bookmarkName);
-            captionLabel.setLabel(label);
-            captionLabel.setSequence(sequence);
-            this.context.putCaptionLabel(bookmarkName, captionLabel);
-        });
-        return this;
+        return createCaptionLabel(bookmarkName, label, null, null, sequence);
     }
 
     @Override
@@ -143,15 +138,7 @@ public class Jword implements JwordLoader, JwordOperator {
 
     @Override
     public JwordOperator addTable(String styleId) {
-        addCommand(() -> {
-            Table table = factory.createTable();
-            table.setStyle(styleId);
-            table.setWidth(100, TableWidthType.PCT);
-            table.setJustification(TableJustification.CENTER);
-            this.context.getDocument().addTable(table);
-            this.context.setCurrentTable(table);
-        });
-        return this;
+        return addTable(styleId, 0, TableWidthType.PCT, TableJustification.CENTER);
     }
 
     @Override
@@ -180,8 +167,80 @@ public class Jword implements JwordLoader, JwordOperator {
     }
 
     @Override
-    public JwordOperator addTableCell() {
+    public JwordOperator addTableCell(double width, TableWidthType widthType, VerticalAlignType alignType, int span, VerticalMergeType mergeType) {
+        addCommand(() -> {
+            TableRow row = this.context.getCurrentRow();
+            if (row == null) throw new IllegalStateException("table row is not exists");
+            TableCell cell = this.factory.createTableCell();
+            cell.setCellWidth(width, widthType);
+            cell.setVerticalAlignType(alignType);
+            cell.setGridSpan(span);
+            cell.setVerticalMergeType(mergeType);
+            this.context.setCurrentCell(cell);
+        });
         return this;
+    }
+
+    @Override
+    public JwordOperator addTextToCell(String styleId, String text) {
+        addCommand(() -> {
+            TableCell cell = this.context.getCurrentCell();
+            if (cell == null) throw new IllegalStateException("table cell is not exists");
+            Paragraph p = this.factory.createParagraph();
+            p.setStyleId(styleId);
+            p.addText(text);
+            cell.addParagraph(p);
+        });
+        return this;
+    }
+
+    @Override
+    public JwordOperator addCaptionLabelToCell(String styleId, String bookmarkName) {
+        addCommand(() -> {
+            TableCell cell = this.context.getCurrentCell();
+            if (cell == null) throw new IllegalStateException("table cell is not exists");
+            CaptionLabel label = this.context.getCaptionLabel(bookmarkName);
+            if (label == null) throw new NoSuchElementException(String.format("bookmarkName %s is not exists", bookmarkName));
+            Paragraph p = this.factory.createParagraph();
+            p.setStyleId(styleId);
+            p.addCaptionLabel(label);
+            cell.addParagraph(p);
+        });
+        return this;
+    }
+
+    @Override
+    public JwordOperator addReferenceToCell(String styleId, String bookmarkName) {
+        addCommand(() -> {
+            TableCell cell = this.context.getCurrentCell();
+            if (cell == null) throw new IllegalStateException("table cell is not exists");
+            CaptionLabel label = this.context.getCaptionLabel(bookmarkName);
+            if (label == null) throw new NoSuchElementException(String.format("bookmarkName %s is not exists", bookmarkName));
+            Reference reference = this.factory.createReference();
+            reference.referTo(label);
+            Paragraph p = this.factory.createParagraph();
+            p.setStyleId(styleId);
+            p.addReference(reference);
+            cell.addParagraph(p);
+        });
+        return this;
+    }
+
+    @Override
+    public JwordOperator addDrawingToCell(String styleId, Path path, double width, double height) {
+        addCommand(sink -> {
+            TableCell cell = this.context.getCurrentCell();
+            if (cell == null) throw new IllegalStateException("table cell is not exists");
+            Paragraph p = this.factory.createParagraph();
+            p.setStyleId(styleId);
+            try {
+                this.context.getDocument().addDrawing(p, path, width, height);
+                cell.addParagraph(p);
+            } catch (IOException e) {
+                sink.error(e);
+            }
+        });
+        return null;
     }
 
     @Override
@@ -269,6 +328,7 @@ public class Jword implements JwordLoader, JwordOperator {
         private Paragraph currentParagraph;
         private Table currentTable;
         private TableRow currentRow;
+        private TableCell currentCell;
         private final Map<String, CaptionLabel> captionLabelMap = new HashMap<>();
 
         public Document getDocument() {
@@ -309,6 +369,14 @@ public class Jword implements JwordLoader, JwordOperator {
 
         public void setCurrentRow(TableRow currentRow) {
             this.currentRow = currentRow;
+        }
+
+        public TableCell getCurrentCell() {
+            return currentCell;
+        }
+
+        public void setCurrentCell(TableCell currentCell) {
+            this.currentCell = currentCell;
         }
 
         public Map<String, CaptionLabel> getCaptionLabelMap() {

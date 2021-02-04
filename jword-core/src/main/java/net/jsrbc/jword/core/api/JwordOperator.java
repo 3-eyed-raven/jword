@@ -2,6 +2,8 @@ package net.jsrbc.jword.core.api;
 
 import net.jsrbc.jword.core.document.enums.TableJustification;
 import net.jsrbc.jword.core.document.enums.TableWidthType;
+import net.jsrbc.jword.core.document.enums.VerticalAlignType;
+import net.jsrbc.jword.core.document.enums.VerticalMergeType;
 
 import java.nio.file.Path;
 import java.util.function.Consumer;
@@ -83,8 +85,51 @@ public interface JwordOperator {
      */
     JwordOperator addTable(String styleId, double width, TableWidthType widthType, TableJustification justification);
 
+    /**
+     * 添加表格行到最近创建的表格
+     */
     JwordOperator addTableRow();
-    JwordOperator addTableCell();
+
+    /**
+     * 添加文字单元格至最近一次创建的表格行
+     * @param width 单元格宽度
+     * @param widthType 宽度类型
+     * @param alignType 垂直对齐方式
+     * @param span 横向合并网格数
+     * @param mergeType 单元格行级合并，restart为合并起点
+     */
+    JwordOperator addTableCell(double width, TableWidthType widthType, VerticalAlignType alignType, int span, VerticalMergeType mergeType);
+
+    /**
+     * 添加文字到最近一次添加的单元格
+     * @param styleId 段落样式ID
+     * @param text 文字格式
+     */
+    JwordOperator addTextToCell(String styleId, String text);
+
+    /**
+     * 添加题注到最近一次生成的单元格
+     * @param styleId 段落样式ID
+     * @param bookmarkName 书签名
+     */
+    JwordOperator addCaptionLabelToCell(String styleId, String bookmarkName);
+
+    /**
+     * 添加交叉引用到最近一次生成的单元格
+     * @param styleId 段落样式ID
+     * @param bookmarkName 书签名
+     */
+    JwordOperator addReferenceToCell(String styleId, String bookmarkName);
+
+    /**
+     * 添加图画到最近一次生成的单元格
+     * @param styleId 段落样式ID
+     * @param path 图画路径
+     * @param width 图画宽度，单位：cm
+     * @param height 图画高度，单位：cm
+     */
+    JwordOperator addDrawingToCell(String styleId, Path path, double width, double height);
+
     JwordOperator addSection();
 
     /**

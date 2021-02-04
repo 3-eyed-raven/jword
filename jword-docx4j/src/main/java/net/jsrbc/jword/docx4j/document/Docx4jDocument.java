@@ -32,7 +32,7 @@ public class Docx4jDocument implements Document {
     private final static ObjectFactory FACTORY = Context.getWmlObjectFactory();
 
     /** ID计数器 */
-    private final AtomicInteger idCounter = new AtomicInteger(0);
+    private final AtomicInteger idGenerator = new AtomicInteger(0);
 
     /** 文档包 */
     private final WordprocessingMLPackage wml;
@@ -81,7 +81,7 @@ public class Docx4jDocument implements Document {
         P p = ((Docx4jParagraph) target).getParagraphOfDocx4j();
         try {
             BinaryPartAbstractImage imagePart = BinaryPartAbstractImage.createImagePart(this.wml, path.toFile());
-            Inline inline = imagePart.createImageInline("picture", "error", idCounter.getAndIncrement(), idCounter.getAndIncrement(), false);
+            Inline inline = imagePart.createImageInline("picture", "error", idGenerator.getAndIncrement(), idGenerator.getAndIncrement(), false);
             // 设置图片大小
             CTPositiveSize2D size = new CTPositiveSize2D();
             size.setCx(cmToEMUs(width));
