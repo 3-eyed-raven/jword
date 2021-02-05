@@ -67,8 +67,9 @@ public class Jword implements JwordLoader, JwordOperator {
     @Override
     public JwordOperator addText(String text) {
         addCommand(() -> {
-            Paragraph paragraph = getOrCreateCurrentParagraph();
-            paragraph.addText(text);
+            Paragraph p = this.context.getCurrentParagraph();
+            if (p == null) throw new IllegalStateException("paragraph is not exists");
+            p.addText(text);
         });
         return this;
     }
@@ -77,7 +78,8 @@ public class Jword implements JwordLoader, JwordOperator {
     @Override
     public JwordOperator addStyledText(String styleId, String text) {
         addCommand(() -> {
-            Paragraph p = getOrCreateCurrentParagraph();
+            Paragraph p = this.context.getCurrentParagraph();
+            if (p == null) throw new IllegalStateException("paragraph is not exists");
             p.addStyledText(styleId, text);
         });
         return this;
@@ -122,9 +124,9 @@ public class Jword implements JwordLoader, JwordOperator {
     public JwordOperator addReference(String bookmarkName) {
         addCommand(() -> {
             CaptionLabel captionLabel = this.context.getCaptionLabel(bookmarkName);
-            if (captionLabel == null)
-                throw new NoSuchElementException(String.format("bookmarkName %s is not exists", bookmarkName));
-            Paragraph p = getOrCreateCurrentParagraph();
+            if (captionLabel == null) throw new NoSuchElementException(String.format("bookmarkName %s is not exists", bookmarkName));
+            Paragraph p = this.context.getCurrentParagraph();
+            if (p == null) throw new IllegalStateException("paragraph is not exists");
             Reference reference = factory.createReference();
             reference.referTo(captionLabel);
             p.addReference(reference);
@@ -137,9 +139,9 @@ public class Jword implements JwordLoader, JwordOperator {
     public JwordOperator addCaptionLabel(String bookmarkName) {
         addCommand(() -> {
             CaptionLabel captionLabel = this.context.getCaptionLabel(bookmarkName);
-            if (captionLabel == null)
-                throw new NoSuchElementException(String.format("bookmarkName %s is not exists", bookmarkName));
-            Paragraph p = getOrCreateCurrentParagraph();
+            if (captionLabel == null) throw new NoSuchElementException(String.format("bookmarkName %s is not exists", bookmarkName));
+            Paragraph p = this.context.getCurrentParagraph();
+            if (p == null) throw new IllegalStateException("paragraph is not exists");
             p.addCaptionLabel(captionLabel);
         });
         return this;
@@ -415,21 +417,6 @@ public class Jword implements JwordLoader, JwordOperator {
             runnable.run();
             sink.success(true); // 这里加上返回值，才能触发flux的OnNext事件
         }));
-    }
-    /**
-     * 获取或者创建最近使用的段落
-     * @return 段落
-     */
-    private Paragraph getOrCreateCurrentParagraph() {
-        Paragraph p;
-        if (this.context.getCurrentParagraph() != null) {
-            p = this.context.getCurrentParagraph();
-        } else {
-            p = factory.createParagraph();
-            this.context.getDocument().addParagraph(p);
-            this.context.setCurrentParagraph(p);
-        }
-        return p;
     }
 
     /**
