@@ -4,6 +4,7 @@ import net.jsrbc.jword.core.document.enums.TableJustification;
 import net.jsrbc.jword.core.document.enums.TableWidthType;
 import net.jsrbc.jword.core.document.enums.VerticalAlignType;
 import net.jsrbc.jword.core.document.enums.VerticalMergeType;
+import reactor.util.annotation.Nullable;
 
 import java.nio.file.Path;
 import java.util.function.Consumer;
@@ -98,7 +99,7 @@ public interface JwordOperator {
      * @param span 横向合并网格数
      * @param mergeType 单元格行级合并，restart为合并起点
      */
-    JwordOperator addTableCell(double width, TableWidthType widthType, VerticalAlignType alignType, int span, VerticalMergeType mergeType);
+    JwordOperator addTableCell(double width, TableWidthType widthType, @Nullable VerticalAlignType alignType, @Nullable Integer span, @Nullable VerticalMergeType mergeType);
 
     /**
      * 添加文字到最近一次添加的单元格

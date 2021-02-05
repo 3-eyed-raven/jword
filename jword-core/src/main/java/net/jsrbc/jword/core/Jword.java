@@ -138,7 +138,7 @@ public class Jword implements JwordLoader, JwordOperator {
 
     @Override
     public JwordOperator addTable(String styleId) {
-        return addTable(styleId, 0, TableWidthType.PCT, TableJustification.CENTER);
+        return addTable(styleId, 100, TableWidthType.PCT, TableJustification.CENTER);
     }
 
     @Override
@@ -161,21 +161,22 @@ public class Jword implements JwordLoader, JwordOperator {
             if (table == null) throw new IllegalStateException("table is not exists");
             TableRow tableRow = factory.createTableRow();
             table.addRow(tableRow);
-            this.context.setCurrentTable(table);
+            this.context.setCurrentRow(tableRow);
         });
         return this;
     }
 
     @Override
-    public JwordOperator addTableCell(double width, TableWidthType widthType, VerticalAlignType alignType, int span, VerticalMergeType mergeType) {
+    public JwordOperator addTableCell(double width, TableWidthType widthType, VerticalAlignType alignType, Integer span, VerticalMergeType mergeType) {
         addCommand(() -> {
             TableRow row = this.context.getCurrentRow();
             if (row == null) throw new IllegalStateException("table row is not exists");
             TableCell cell = this.factory.createTableCell();
             cell.setCellWidth(width, widthType);
-            cell.setVerticalAlignType(alignType);
-            cell.setGridSpan(span);
-            cell.setVerticalMergeType(mergeType);
+            if (alignType != null) cell.setVerticalAlignType(alignType);
+            if (span != null) cell.setGridSpan(span);
+            if (mergeType != null) cell.setVerticalMergeType(mergeType);
+            row.addCell(cell);
             this.context.setCurrentCell(cell);
         });
         return this;
