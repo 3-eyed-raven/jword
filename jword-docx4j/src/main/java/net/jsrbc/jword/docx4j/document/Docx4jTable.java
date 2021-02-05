@@ -22,6 +22,7 @@ public class Docx4jTable implements Table {
 
     private final Tbl tbl = FACTORY.createTbl();
 
+    /** {@inheritDoc} */
     @Override
     public void setStyle(String styleId) {
         CTTblPrBase.TblStyle style = FACTORY.createCTTblPrBaseTblStyle();
@@ -29,6 +30,7 @@ public class Docx4jTable implements Table {
         getTblPr().setTblStyle(style);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setWidth(double width, TableWidthType type) {
         TblWidth tblWidth = FACTORY.createTblWidth();
@@ -41,6 +43,7 @@ public class Docx4jTable implements Table {
         getTblPr().setTblW(tblWidth);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setJustification(TableJustification tableJustification) {
         Jc jc = FACTORY.createJc();
@@ -48,6 +51,7 @@ public class Docx4jTable implements Table {
         getTblPr().setJc(jc);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void addRow(TableRow row) {
         if (!(row instanceof Docx4jTableRow))
@@ -55,10 +59,16 @@ public class Docx4jTable implements Table {
         this.tbl.getContent().add(((Docx4jTableRow) row).getTableRowOfDocx4j());
     }
 
+    /**
+     * 获取Docx4j对应的表格对象
+     */
     public Tbl getTableOfDocx4j() {
         return this.tbl;
     }
 
+    /**
+     * 获取表格对象，不存在则创建
+     */
     private TblPr getTblPr() {
         if (this.tbl.getTblPr() == null) {
             TblPr tblPr = FACTORY.createTblPr();

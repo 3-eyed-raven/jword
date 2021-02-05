@@ -21,8 +21,10 @@ public class Docx4jSection implements Section {
 
     private final static ObjectFactory FACTORY = Context.getWmlObjectFactory();
 
+    /** 分节符 */
     private final SectPr sectPr = FACTORY.createSectPr();
 
+    /** {@inheritDoc} */
     @Override
     public void setType(SectionType sectionType) {
         SectPr.Type type = FACTORY.createSectPrType();
@@ -30,6 +32,7 @@ public class Docx4jSection implements Section {
         this.sectPr.setType(type);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setPageSize(PageSize pageSize) {
         SectPr.PgSz pgSz = getPgSz();
@@ -38,12 +41,14 @@ public class Docx4jSection implements Section {
         pgSz.setH(BigInteger.valueOf(cmToTwips(pageSize.getHeight())));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setPageOrientation(PageOrientation orientation) {
         SectPr.PgSz pgSz = getPgSz();
         pgSz.setOrient(STPageOrientation.valueOf(orientation.name()));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setPageMargin(double top, double right, double bottom, double left) {
         SectPr.PgMar pgMar = getPgMar();
@@ -53,18 +58,21 @@ public class Docx4jSection implements Section {
         pgMar.setLeft(BigInteger.valueOf(cmToTwips(left)));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setHeaderMargin(double headerMargin) {
         SectPr.PgMar pgMar = getPgMar();
         pgMar.setHeader(BigInteger.valueOf(cmToTwips(headerMargin)));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setFooterMargin(double footerMargin) {
         SectPr.PgMar pgMar = getPgMar();
         pgMar.setFooter(BigInteger.valueOf(cmToTwips(footerMargin)));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void addHeaderReference(String id, HeaderFooterType headerFooterType) {
         HeaderReference hr = FACTORY.createHeaderReference();
@@ -73,6 +81,7 @@ public class Docx4jSection implements Section {
         this.sectPr.getEGHdrFtrReferences().add(hr);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void addFooterReference(String id, HeaderFooterType headerFooterType) {
         FooterReference fr = FACTORY.createFooterReference();

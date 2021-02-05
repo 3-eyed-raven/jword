@@ -74,6 +74,7 @@ public class Docx4jDocument implements Document {
         this.body.getContent().add(((Docx4jParagraph)paragraph).getParagraphOfDocx4j());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void addDrawing(Paragraph target, Path path, double width, double height) throws IOException {
         if (!(target instanceof Docx4jParagraph))

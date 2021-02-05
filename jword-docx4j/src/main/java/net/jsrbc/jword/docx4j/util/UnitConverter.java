@@ -17,7 +17,7 @@ public final class UnitConverter {
     }
 
     /**
-     * 百分之五十值转百分比
+     * 百分比转百分之五十值
      * @return 百分比
      */
     public static int percentToFifthPct(double percentValue) {

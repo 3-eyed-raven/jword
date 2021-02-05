@@ -3,6 +3,7 @@ package net.jsrbc.jword.core.api;
 import net.jsrbc.jword.core.document.enums.*;
 import reactor.util.annotation.Nullable;
 
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
@@ -186,11 +187,20 @@ public interface JwordOperator {
     JwordOperator addFooterReference(String id, HeaderFooterType headerFooterType);
 
     /**
-     * 保存文档
+     * 另存文档
      * @param dest 保存路径
      * @param onProgress 进度事件
      * @param onError 错误事件
      * @param onComplete 完成事件
      */
     void saveAs(Path dest, Consumer<? super Integer> onProgress, Consumer<? super Throwable> onError, Runnable onComplete);
+
+    /**
+     * 另存文档
+     * @param os 输出流
+     * @param onProgress 进度事件
+     * @param onError 错误事件
+     * @param onComplete 完成事件
+     */
+    void saveAs(OutputStream os, Consumer<? super Integer> onProgress, Consumer<? super Throwable> onError, Runnable onComplete);
 }

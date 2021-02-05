@@ -15,8 +15,10 @@ public class Docx4jTableRow implements TableRow {
 
     private final static ObjectFactory FACTORY = Context.getWmlObjectFactory();
 
+    /** 表格行对象 */
     private final Tr tr = FACTORY.createTr();
 
+    /** {@inheritDoc} */
     @Override
     public void addCell(TableCell cell) {
         if (!(cell instanceof Docx4jTableCell))
@@ -24,6 +26,9 @@ public class Docx4jTableRow implements TableRow {
         this.tr.getContent().add(((Docx4jTableCell) cell).getTableCellOfDocx4j());
     }
 
+    /**
+     * 获取Docx4j的表格行对象
+     */
     public Tr getTableRowOfDocx4j() {
         return this.tr;
     }

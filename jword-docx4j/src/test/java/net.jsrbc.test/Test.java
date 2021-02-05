@@ -3,8 +3,6 @@ package net.jsrbc.test;
 import net.jsrbc.jword.core.Jword;
 import net.jsrbc.jword.core.document.enums.*;
 import net.jsrbc.jword.docx4j.factory.Docx4jJwordFactory;
-import org.docx4j.jaxb.Context;
-import org.docx4j.wml.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

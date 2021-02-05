@@ -22,8 +22,10 @@ public class Docx4jTableCell implements TableCell {
 
     private final static ObjectFactory FACTORY = Context.getWmlObjectFactory();
 
+    /** 单元格对象 */
     private final Tc tc = FACTORY.createTc();
 
+    /** {@inheritDoc} */
     @Override
     public void setCellWidth(double width, TableWidthType type) {
         TblWidth tcW = FACTORY.createTblWidth();
@@ -36,6 +38,7 @@ public class Docx4jTableCell implements TableCell {
         getTcPr().setTcW(tcW);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setGridSpan(int span) {
         TcPrInner.GridSpan gridSpan = FACTORY.createTcPrInnerGridSpan();
@@ -43,6 +46,7 @@ public class Docx4jTableCell implements TableCell {
         getTcPr().setGridSpan(gridSpan);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setVerticalMergeType(VerticalMergeType verticalMergeType) {
         TcPrInner.VMerge vMerge = FACTORY.createTcPrInnerVMerge();
@@ -50,6 +54,7 @@ public class Docx4jTableCell implements TableCell {
         getTcPr().setVMerge(vMerge);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setVerticalAlignType(VerticalAlignType verticalAlignType) {
         CTVerticalJc vAlign = FACTORY.createCTVerticalJc();
@@ -57,6 +62,7 @@ public class Docx4jTableCell implements TableCell {
         getTcPr().setVAlign(vAlign);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void addParagraph(Paragraph paragraph) {
         if (!(paragraph instanceof Docx4jParagraph))
@@ -64,10 +70,16 @@ public class Docx4jTableCell implements TableCell {
         this.tc.getContent().add(((Docx4jParagraph) paragraph).getParagraphOfDocx4j());
     }
 
+    /**
+     * 获取Docx4j对应的表格单元格对象
+     */
     public Tc getTableCellOfDocx4j() {
         return this.tc;
     }
 
+    /**
+     * 获取表格单元格，不存在则创建
+     */
     private TcPr getTcPr() {
         if (this.tc.getTcPr() == null) {
             TcPr tcPr = FACTORY.createTcPr();

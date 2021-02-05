@@ -19,6 +19,7 @@ public class Docx4jParagraph implements Paragraph {
 
     private final static ObjectFactory FACTORY = Context.getWmlObjectFactory();
 
+    /** 段落对象 */
     private final P p = FACTORY.createP();
 
     /** {@inheritDoc} */
