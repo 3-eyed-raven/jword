@@ -6,6 +6,7 @@ package net.jsrbc.jword.core.document.enums;
  * @version 1.0
  */
 public enum SectionType {
+
     /** 连续分节符 */
     CONTINUOUS("continuous"),
 

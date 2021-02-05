@@ -3,10 +3,7 @@ package net.jsrbc.jword.core;
 import net.jsrbc.jword.core.api.JwordOperator;
 import net.jsrbc.jword.core.api.JwordLoader;
 import net.jsrbc.jword.core.document.*;
-import net.jsrbc.jword.core.document.enums.TableJustification;
-import net.jsrbc.jword.core.document.enums.TableWidthType;
-import net.jsrbc.jword.core.document.enums.VerticalAlignType;
-import net.jsrbc.jword.core.document.enums.VerticalMergeType;
+import net.jsrbc.jword.core.document.enums.*;
 import net.jsrbc.jword.core.factory.AbstractJwordFactory;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
@@ -137,6 +134,22 @@ public class Jword implements JwordLoader, JwordOperator {
     }
 
     @Override
+    public JwordOperator addDrawing(Path path, double width, double height) {
+        addCommand(sink -> {
+            Paragraph p = this.context.getCurrentParagraph();
+            if (p == null)
+                throw new IllegalStateException("paragraph is not exists");
+            try {
+                this.context.getDocument().addDrawing(p, path, width, height);
+                sink.success(true);
+            } catch (IOException e) {
+                sink.error(e);
+            }
+        });
+        return this;
+    }
+
+    @Override
     public JwordOperator addTable(String styleId) {
         return addTable(styleId, 100, TableWidthType.PCT, TableJustification.CENTER);
     }
@@ -196,7 +209,7 @@ public class Jword implements JwordLoader, JwordOperator {
     }
 
     @Override
-    public JwordOperator addCaptionLabelToCell(String styleId, String bookmarkName) {
+    public JwordOperator addCaptionLabelToCell(String styleId, String bookmarkName, String desc) {
         addCommand(() -> {
             TableCell cell = this.context.getCurrentCell();
             if (cell == null) throw new IllegalStateException("table cell is not exists");
@@ -205,6 +218,7 @@ public class Jword implements JwordLoader, JwordOperator {
             Paragraph p = this.factory.createParagraph();
             p.setStyleId(styleId);
             p.addCaptionLabel(label);
+            p.addText("  " + desc);
             cell.addParagraph(p);
         });
         return this;
@@ -237,15 +251,90 @@ public class Jword implements JwordLoader, JwordOperator {
             try {
                 this.context.getDocument().addDrawing(p, path, width, height);
                 cell.addParagraph(p);
+                sink.success(true);
             } catch (IOException e) {
                 sink.error(e);
             }
         });
-        return null;
+        return this;
     }
 
     @Override
     public JwordOperator addSection() {
+        addCommand(() -> {
+            Paragraph p = this.factory.createParagraph();
+            Section section = this.factory.createSection();
+            p.setSection(section);
+            this.context.getDocument().addParagraph(p);
+            this.context.setCurrentSection(section);
+        });
+        return this;
+    }
+
+    @Override
+    public JwordOperator setPageSize(PageSize pageSize) {
+        addCommand(() -> {
+            Section section = this.context.getCurrentSection();
+            if (section == null)
+                throw new IllegalStateException("section is not exists");
+            section.setPageSize(pageSize);
+        });
+        return this;
+    }
+
+    @Override
+    public JwordOperator setPageOrientation(PageOrientation orientation) {
+        addCommand(() -> {
+            Section section = this.context.getCurrentSection();
+            if (section == null)
+                throw new IllegalStateException("section is not exists");
+            section.setPageOrientation(orientation);
+        });
+        return this;
+    }
+
+    @Override
+    public JwordOperator setPageMargin(double top, double right, double bottom, double left) {
+        addCommand(() -> {
+            Section section = this.context.getCurrentSection();
+            if (section == null)
+                throw new IllegalStateException("section is not exists");
+            section.setPageMargin(top, right, bottom, left);
+        });
+        return this;
+    }
+
+    @Override
+    public JwordOperator setHeaderFootMargin(double headerMargin, double footerMargin) {
+        addCommand(() -> {
+            Section section = this.context.getCurrentSection();
+            if (section == null)
+                throw new IllegalStateException("section is not exists");
+            section.setHeaderMargin(headerMargin);
+            section.setFooterMargin(footerMargin);
+        });
+        return this;
+    }
+
+    @Override
+    public JwordOperator addHeaderReference(String id, HeaderFooterType headerFooterType) {
+        addCommand(() -> {
+            Section section = this.context.getCurrentSection();
+            if (section == null)
+                throw new IllegalStateException("section is not exists");
+            section.addHeaderReference(id, headerFooterType);
+        });
+        return this;
+    }
+
+    @Override
+    public JwordOperator addFooterReference(String id, HeaderFooterType headerFooterType) {
+        addCommand(() -> {
+            Section section = this.context.getCurrentSection();
+            if (section == null)
+                throw new IllegalStateException("section is not exists");
+            section.addFooterReference(id, headerFooterType);
+        });
         return this;
     }
 
@@ -322,11 +411,22 @@ public class Jword implements JwordLoader, JwordOperator {
     }
 
     /**
-     * 上下文
+     * 计算进度
+     * @param index 当前位置
+     * @return 进度，总共100
+     */
+    private int calcProgress(long index) {
+        if (commands.isEmpty()) return 100;
+        return (int) (index + 1) * 100 / commands.size();
+    }
+
+    /**
+     * JWord上下文
      */
     private static class Context {
         private Document document;
         private Paragraph currentParagraph;
+        private Section currentSection;
         private Table currentTable;
         private TableRow currentRow;
         private TableCell currentCell;
@@ -346,6 +446,18 @@ public class Jword implements JwordLoader, JwordOperator {
 
         public void setCurrentParagraph(Paragraph currentParagraph) {
             this.currentParagraph = currentParagraph;
+        }
+
+        public Section getCurrentSection() {
+            return currentSection;
+        }
+
+        public void setCurrentSection(Section currentSection) {
+            this.currentSection = currentSection;
+        }
+
+        public Map<String, CaptionLabel> getCaptionLabelMap() {
+            return captionLabelMap;
         }
 
         public void putCaptionLabel(String bookmarkName, CaptionLabel captionLabel) {
@@ -379,19 +491,5 @@ public class Jword implements JwordLoader, JwordOperator {
         public void setCurrentCell(TableCell currentCell) {
             this.currentCell = currentCell;
         }
-
-        public Map<String, CaptionLabel> getCaptionLabelMap() {
-            return captionLabelMap;
-        }
-    }
-
-    /**
-     * 计算进度
-     * @param index 当前位置
-     * @return 进度，总共100
-     */
-    private int calcProgress(long index) {
-        if (commands.isEmpty()) return 100;
-        return (int) (index + 1) * 100 / commands.size();
     }
 }

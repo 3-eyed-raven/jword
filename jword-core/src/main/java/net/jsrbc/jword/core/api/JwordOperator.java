@@ -1,9 +1,6 @@
 package net.jsrbc.jword.core.api;
 
-import net.jsrbc.jword.core.document.enums.TableJustification;
-import net.jsrbc.jword.core.document.enums.TableWidthType;
-import net.jsrbc.jword.core.document.enums.VerticalAlignType;
-import net.jsrbc.jword.core.document.enums.VerticalMergeType;
+import net.jsrbc.jword.core.document.enums.*;
 import reactor.util.annotation.Nullable;
 
 import java.nio.file.Path;
@@ -72,6 +69,14 @@ public interface JwordOperator {
     JwordOperator addCaptionLabel(String bookmarkName);
 
     /**
+     * 添加图画到最近一次生成的段落
+     * @param path 图画路径
+     * @param width 图画宽度，单位：cm
+     * @param height 图画高度，单位：cm
+     */
+    JwordOperator addDrawing(Path path, double width, double height);
+
+    /**
      * 添加表格，表格宽度与文档宽度一致
      * @param styleId 表格样式ID
      */
@@ -112,8 +117,9 @@ public interface JwordOperator {
      * 添加题注到最近一次生成的单元格
      * @param styleId 段落样式ID
      * @param bookmarkName 书签名
+     * @param desc 描述性文字
      */
-    JwordOperator addCaptionLabelToCell(String styleId, String bookmarkName);
+    JwordOperator addCaptionLabelToCell(String styleId, String bookmarkName, String desc);
 
     /**
      * 添加交叉引用到最近一次生成的单元格
@@ -131,7 +137,53 @@ public interface JwordOperator {
      */
     JwordOperator addDrawingToCell(String styleId, Path path, double width, double height);
 
+    /**
+     * 添加分节符划分章节
+     * 上一个分节符至设置本分节符的段落均属于一个章节
+     */
     JwordOperator addSection();
+
+    /**
+     * 设置当前节页面大小
+     * @param pageSize 页面大小
+     */
+    JwordOperator setPageSize(PageSize pageSize);
+
+    /**
+     * 设置当前节页面方向
+     * @param orientation 方向
+     */
+    JwordOperator setPageOrientation(PageOrientation orientation);
+
+    /**
+     * 设置当前节页面边距
+     * @param top 上边距，单位：cm
+     * @param right 右边距，单位：cm
+     * @param bottom 下边距，单位：cm
+     * @param left 左边距，单位：cm
+     */
+    JwordOperator setPageMargin(double top, double right, double bottom, double left);
+
+    /**
+     * 设置当前节页眉页脚的边距
+     * @param headerMargin 页眉边距，单位：cm
+     * @param footerMargin 页脚边距，单位：cm
+     */
+    JwordOperator setHeaderFootMargin(double headerMargin, double footerMargin);
+
+    /**
+     * 设置当前节页眉引用
+     * @param id 引用的页眉ID
+     * @param headerFooterType 页眉类型
+     */
+    JwordOperator addHeaderReference(String id, HeaderFooterType headerFooterType);
+
+    /**
+     * 设置页脚引用
+     * @param id 引用的页脚ID
+     * @param headerFooterType 页脚类型
+     */
+    JwordOperator addFooterReference(String id, HeaderFooterType headerFooterType);
 
     /**
      * 保存文档
