@@ -31,14 +31,7 @@ public interface Paragraph {
      * 追加段落文字
      * @param text 段落文字
      */
-    void addText(String text);
-
-    /**
-     * 追加带样式的段落文字
-     * @param styleId 段落ID
-     * @param text 段落文字
-     */
-    void addStyledText(String styleId, String text);
+    void addText(Text text);
 
     /**
      * 追加题注

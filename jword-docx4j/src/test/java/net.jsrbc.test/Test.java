@@ -1,9 +1,19 @@
 package net.jsrbc.test;
 
 import net.jsrbc.jword.core.Jword;
+import net.jsrbc.jword.core.document.Text;
 import net.jsrbc.jword.core.document.enums.*;
+import net.jsrbc.jword.core.document.visit.DocumentVisitResult;
+import net.jsrbc.jword.core.document.visit.DocumentVisitor;
 import net.jsrbc.jword.docx4j.factory.Docx4jJwordFactory;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
+import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
+import org.docx4j.openpackaging.parts.relationships.Namespaces;
+import org.docx4j.relationships.Relationship;
+import org.docx4j.wml.ContentAccessor;
 
+import javax.xml.bind.JAXBElement;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -19,25 +29,26 @@ public class Test {
     private final static Path sideImage = Paths.get("C:/Users/ZZZ/Desktop/2.jpg");
 
     public static void main(String[] args) throws Throwable {
-        test();
+//        test();
+        testRaw();
     }
 
     private static void test() throws Exception {
         Jword.create(new Docx4jJwordFactory())
                 .load(source)
-                .addParagraph("1", "GY001 K1+94 GY田唐桥")
-                .addParagraph("2", "总体情况")
+                .addParagraph("1").addText("GY001 K1+94 GY田唐桥")
+                .addParagraph("2").addText("总体情况")
                 .createCaptionLabel("bridgeTable", "表", "2", "1.1", 1)
                 .createCaptionLabel("frontImage", "图", "2", "1.1", 1)
                 .createCaptionLabel("sideImage" , "图", "2", "1.1", 2)
-                .addParagraph("a", "GY田唐桥为单幅桥，相关信息如")
+                .addParagraph("a").addText("GY田唐桥为单幅桥，相关信息如")
                 .addReference("bridgeTable")
                 .addText("所示，桥梁正面照及侧面照如")
                 .addReference("frontImage").addText("与")
                 .addReference("sideImage").addText("所示")
-                .addParagraph("a", "本次检查GY田唐桥评分为81分，等级为2类。")
-                .addParagraph("afc", "")
-                .addCaptionLabel("bridgeTable").addText("  桥梁基本信息一览表")
+                .addParagraph("a").addText("本次检查GY田唐桥评分为81分，等级为2类。")
+                .addParagraph("afc")
+                .addCaptionLabel("bridgeTable", "桥梁基本信息一览表")
                 .addTable("ac")
                 .addTableRow()
                 .addTableCell(16.66, TableWidthType.PCT, VerticalAlignType.CENTER, null, null)
@@ -110,7 +121,7 @@ public class Test {
                 .addTextToCell("ad", "(孔*m)")
                 .addTableCell(100 - 16.66, TableWidthType.PCT, VerticalAlignType.CENTER, 5, null)
                 .addTextToCell("ae", "1*5")
-                .addParagraph("a", "")
+                .addParagraph("a")
                 .addTable("a1")
                 .addTableRow()
                 .addTableCell(50, TableWidthType.PCT, VerticalAlignType.CENTER, null, null)
@@ -124,14 +135,13 @@ public class Test {
                 .addCaptionLabelToCell("ad", "frontImage", "桥梁正面照")
                 .addTableCell(50, TableWidthType.PCT, VerticalAlignType.CENTER, null, null)
                 .addCaptionLabelToCell("ad", "sideImage", "桥梁侧面照")
-                .addParagraph("2", "检查评定结果")
-                .addParagraph("3", "桥梁技术状况评定结果")
+                .addParagraph("2").addText("检查评定结果")
+                .addParagraph("3").addText("桥梁技术状况评定结果")
                 .createCaptionLabel("evaluationTable", "表", "3", "1.2.1", 1)
-                .addParagraph("a", "根据现场检查结果，依据《公路桥梁技术状况评定标准》（JTG/T H21-2011），对桥梁各评定单元进行技术状况评定，结果列于")
+                .addParagraph("a").addText("根据现场检查结果，依据《公路桥梁技术状况评定标准》（JTG/T H21-2011），对桥梁各评定单元进行技术状况评定，结果列于")
                 .addReference("evaluationTable").addText("。")
-                .addParagraph("afc", "")
-                .addCaptionLabel("evaluationTable")
-                .addText("  GY田唐桥技术状况评定结果表")
+                .addParagraph("afc")
+                .addCaptionLabel("evaluationTable", "GY田唐桥技术状况评定结果表")
                 .addTable("ac")
                 .addTableRow()
                 .addTableCell(12.5, TableWidthType.PCT, VerticalAlignType.CENTER, null, null)
@@ -201,6 +211,23 @@ public class Test {
                 .addTextToCell("ae", "")
                 .addTableCell(12.5, TableWidthType.PCT, VerticalAlignType.CENTER, null, VerticalMergeType.CONTINUE)
                 .addTextToCell("ae", "")
+                .updateTableOfContent()
+                .saveAs(dest, System.out::println, Throwable::printStackTrace, () -> System.out.println("完成"));
+    }
+
+    public static void testRaw() throws Throwable {
+        Jword.create(new Docx4jJwordFactory())
+                .load(source)
+                .walkHeader(new DocumentVisitor() {
+                    @Override
+                    public DocumentVisitResult visitText(Text text) {
+                        String str = text.getValue();
+                        if (str.contains("报告编号")) {
+                            text.setValue("测试桥梁");
+                        }
+                        return DocumentVisitResult.CONTINUE;
+                    }
+                })
                 .saveAs(dest, System.out::println, Throwable::printStackTrace, () -> System.out.println("完成"));
     }
 }

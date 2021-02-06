@@ -1,6 +1,7 @@
 package net.jsrbc.jword.core.api;
 
 import net.jsrbc.jword.core.document.enums.*;
+import net.jsrbc.jword.core.document.visit.DocumentVisitor;
 import reactor.util.annotation.Nullable;
 
 import java.io.OutputStream;
@@ -15,6 +16,25 @@ import java.util.function.Consumer;
  * @version 1.0
  */
 public interface JwordOperator {
+
+    /**
+     * 遍历文档文档内容
+     * @param visitor 访问者
+     */
+    JwordOperator walkBody(DocumentVisitor visitor);
+
+    /**
+     * 遍历文档文档页眉
+     * @param visitor 访问者
+     */
+    JwordOperator walkHeader(DocumentVisitor visitor);
+
+    /**
+     * 遍历文档文档页脚
+     * @param visitor 访问者
+     */
+    JwordOperator walkFooter(DocumentVisitor visitor);
+
     /**
      * 在最近的生成的段落上添加文字
      * 如果段落不存在，则会创建一个段落，并把文字添加上去
@@ -32,10 +52,9 @@ public interface JwordOperator {
 
     /**
      * 添加一个段落
-     * @param styleId 段落整体样式
-     * @param text 段落文字
+     * @param styleId 段落样式
      */
-    JwordOperator addParagraph(String styleId, String text);
+    JwordOperator addParagraph(String styleId);
 
     /**
      * 创建一个不带章节编号的题注，注意此时并未添加到文档中，需要调用addCaptionLabel进行添加
@@ -66,8 +85,9 @@ public interface JwordOperator {
      * 在最近的段落上添加题注，前提条件是该题注已经创建
      * 如果段落不存在，则会创建一个段落，并把题注添加上去
      * @param bookmarkName 书签名
+     * @param desc 书签描述
      */
-    JwordOperator addCaptionLabel(String bookmarkName);
+    JwordOperator addCaptionLabel(String bookmarkName, String desc);
 
     /**
      * 添加图画到最近一次生成的段落
@@ -185,6 +205,11 @@ public interface JwordOperator {
      * @param headerFooterType 页脚类型
      */
     JwordOperator addFooterReference(String id, HeaderFooterType headerFooterType);
+
+    /**
+     * 更新目录
+     */
+    JwordOperator updateTableOfContent();
 
     /**
      * 另存文档

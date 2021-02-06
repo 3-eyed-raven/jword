@@ -1,5 +1,7 @@
 package net.jsrbc.jword.core.document;
 
+import net.jsrbc.jword.core.document.visit.DocumentVisitor;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
@@ -10,6 +12,24 @@ import java.nio.file.Path;
  * @version 1.0
  */
 public interface Document {
+
+    /**
+     * 访问文档内容
+     * @param visitor 文档访问者
+     */
+    void walkBody(DocumentVisitor visitor);
+
+    /**
+     * 访问页眉
+     * @param visitor 文档访问者
+     */
+    void walkHeader(DocumentVisitor visitor);
+
+    /**
+     * 访问页脚
+     * @param visitor 文档访问者
+     */
+    void walkFooter(DocumentVisitor visitor);
 
     /**
      * 添加表格
@@ -38,6 +58,11 @@ public interface Document {
      * @param section 分节符
      */
     void addSection(Section section);
+
+    /**
+     * 更新目录，请注意：不支持更新页码
+     */
+    void updateTableOfContent();
 
     /**
      * 保存文档

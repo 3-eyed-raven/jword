@@ -4,17 +4,24 @@ import net.jsrbc.jword.core.document.Document;
 import net.jsrbc.jword.core.document.Paragraph;
 import net.jsrbc.jword.core.document.Section;
 import net.jsrbc.jword.core.document.Table;
+import net.jsrbc.jword.core.document.visit.DocumentVisitResult;
+import net.jsrbc.jword.core.document.visit.DocumentVisitor;
 import org.docx4j.dml.CTPositiveSize2D;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
+import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
+import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
-import org.docx4j.wml.Drawing;
-import org.docx4j.wml.ObjectFactory;
-import org.docx4j.wml.P;
+import org.docx4j.openpackaging.parts.relationships.Namespaces;
+import org.docx4j.relationships.Relationship;
+import org.docx4j.toc.TocException;
+import org.docx4j.toc.TocGenerator;
+import org.docx4j.wml.*;
 
+import javax.xml.bind.JAXBElement;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
@@ -55,6 +62,32 @@ public class Docx4jDocument implements Document {
             return new Docx4jDocument(wml, path);
         } catch (Docx4JException e) {
             throw new IOException(e);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void walkBody(DocumentVisitor visitor) {
+        walk(this.body, visitor);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void walkHeader(DocumentVisitor visitor) {
+        for (Relationship relationship : this.body.getRelationshipsPart().getRelationshipsByType(Namespaces.HEADER)) {
+            HeaderPart headerPart = (HeaderPart) this.body.getRelationshipsPart().getPart(relationship);
+            DocumentVisitResult result = walk(headerPart, visitor);
+            if (result == DocumentVisitResult.TERMINATE) return;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void walkFooter(DocumentVisitor visitor) {
+        for (Relationship relationship : this.body.getRelationshipsPart().getRelationshipsByType(Namespaces.FOOTER)) {
+            FooterPart footerPart = (FooterPart) this.body.getRelationshipsPart().getPart(relationship);
+            DocumentVisitResult result = walk(footerPart, visitor);
+            if (result == DocumentVisitResult.TERMINATE) return;
         }
     }
 
@@ -108,6 +141,17 @@ public class Docx4jDocument implements Document {
 
     /** {@inheritDoc} */
     @Override
+    public void updateTableOfContent() {
+        try {
+            TocGenerator generator = new TocGenerator(this.wml);
+            generator.updateToc(true);
+        } catch (TocException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void save() throws IOException {
         try {
             this.wml.save(this.source.toFile());
@@ -140,5 +184,27 @@ public class Docx4jDocument implements Document {
         this.wml = wml;
         this.body = wml.getMainDocumentPart();
         this.source = source;
+    }
+
+    /**
+     * 递归访问文档
+     * @param content 访问内容
+     * @param visitor 访问者
+     * @return 访问结果
+     */
+    private DocumentVisitResult walk(Object content, DocumentVisitor visitor) {
+        if (content instanceof ContentAccessor) {
+            for (Object obj : ((ContentAccessor) content).getContent()) {
+                DocumentVisitResult result = walk(obj, visitor);
+                if (result == DocumentVisitResult.TERMINATE) return result;
+            }
+        } else if (content instanceof JAXBElement) {
+            return walk(((JAXBElement<?>) content).getValue(), visitor);
+        } else if (content instanceof Text && ((Text) content).getParent() instanceof R) {
+            Text text = (Text) content;
+            R r = (R) text.getParent();
+            return visitor.visitText(new Docx4jText(r, text.getValue()));
+        }
+        return DocumentVisitResult.CONTINUE;
     }
 }

@@ -4,6 +4,7 @@ import net.jsrbc.jword.core.document.CaptionLabel;
 import net.jsrbc.jword.core.document.Paragraph;
 import net.jsrbc.jword.core.document.Reference;
 import net.jsrbc.jword.core.document.Section;
+import net.jsrbc.jword.core.document.Text;
 import net.jsrbc.jword.core.document.enums.ParagraphJustification;
 import org.docx4j.jaxb.Context;
 import org.docx4j.wml.*;
@@ -50,14 +51,8 @@ public class Docx4jParagraph implements Paragraph {
 
     /** {@inheritDoc} */
     @Override
-    public void addText(String text) {
-        this.p.getContent().add(createText(text));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void addStyledText(String styleId, String text) {
-        this.p.getContent().add(createStyledText(styleId, text));
+    public void addText(Text text) {
+        this.p.getContent().add(((Docx4jText) text).getTextOfDocx4j());
     }
 
     /** {@inheritDoc} */

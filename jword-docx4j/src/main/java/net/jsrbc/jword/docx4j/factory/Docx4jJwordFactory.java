@@ -28,6 +28,12 @@ public class Docx4jJwordFactory implements AbstractJwordFactory {
 
     /** {@inheritDoc} */
     @Override
+    public Text createText() {
+        return new Docx4jText();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public CaptionLabel createCaptionLabel() {
         return new Docx4jCaptionLabel();
     }

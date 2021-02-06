@@ -27,6 +27,11 @@ public interface AbstractJwordFactory {
     Paragraph createParagraph();
 
     /**
+     * 创建文本
+     */
+    Text createText();
+
+    /**
      * 创建题注
      * @return 题注
      */

@@ -12,16 +12,16 @@ import javax.xml.bind.JAXBElement;
  */
 public final class Docx4jFactory {
 
-    private final static ObjectFactory factory = Context.getWmlObjectFactory();
+    private final static ObjectFactory FACTORY = Context.getWmlObjectFactory();
 
     /**
      * 创建域起始标签
      * @return 域起始标签
      */
     public static R createFldBegin() {
-        FldChar fldChar = factory.createFldChar();
+        FldChar fldChar = FACTORY.createFldChar();
         fldChar.setFldCharType(STFldCharType.BEGIN);
-        R r = factory.createR();
+        R r = FACTORY.createR();
         r.getContent().add(fldChar);
         return r;
     }
@@ -31,9 +31,9 @@ public final class Docx4jFactory {
      * @return 创建域分隔符
      */
     public static R createFldSeparate() {
-        FldChar fldChar = factory.createFldChar();
+        FldChar fldChar = FACTORY.createFldChar();
         fldChar.setFldCharType(STFldCharType.SEPARATE);
-        R r = factory.createR();
+        R r = FACTORY.createR();
         r.getContent().add(fldChar);
         return r;
     }
@@ -43,9 +43,9 @@ public final class Docx4jFactory {
      * @return 域结束符
      */
     public static R createFldEnd() {
-        FldChar fldChar = factory.createFldChar();
+        FldChar fldChar = FACTORY.createFldChar();
         fldChar.setFldCharType(STFldCharType.END);
-        R r = factory.createR();
+        R r = FACTORY.createR();
         r.getContent().add(fldChar);
         return r;
     }
@@ -56,34 +56,11 @@ public final class Docx4jFactory {
      * @return 文本
      */
     public static R createText(String text) {
-        R r = factory.createR();
-        Text t = factory.createText();
+        R r = FACTORY.createR();
+        Text t = FACTORY.createText();
         t.setValue(text);
         t.setSpace("preserve");
         r.getContent().add(t);
-        return r;
-    }
-
-    /**
-     * 创建带样式的文本
-     * @param styleId 样式ID
-     * @param text 文本内容
-     * @return 样式文本
-     */
-    public static R createStyledText(String styleId, String text) {
-        R r = factory.createR();
-        // 设置样式
-        RPr rPr = factory.createRPr();
-        RStyle style = factory.createRStyle();
-        style.setVal(styleId);
-        rPr.setRStyle(style);
-        // 设置文字
-        Text txt = factory.createText();
-        txt.setValue(text);
-        txt.setSpace("preserve");
-        // 拼装
-        r.setRPr(rPr);
-        r.getContent().add(txt);
         return r;
     }
 
@@ -93,10 +70,10 @@ public final class Docx4jFactory {
      * @return 命令文本
      */
     public static R createInstrText(String text) {
-        R r = factory.createR();
-        Text t = factory.createText();
+        R r = FACTORY.createR();
+        Text t = FACTORY.createText();
         t.setValue(text);
-        JAXBElement<Text> textElement = factory.createRInstrText(t);
+        JAXBElement<Text> textElement = FACTORY.createRInstrText(t);
         r.getContent().add(textElement);
         return r;
     }
@@ -107,11 +84,11 @@ public final class Docx4jFactory {
      * @return 保留空白字段的文本
      */
     public static R createPreserveInstrText(String text) {
-        R r = factory.createR();
-        Text t = factory.createText();
+        R r = FACTORY.createR();
+        Text t = FACTORY.createText();
         t.setSpace("preserve");
         t.setValue(text);
-        JAXBElement<Text> textElement = factory.createRInstrText(t);
+        JAXBElement<Text> textElement = FACTORY.createRInstrText(t);
         r.getContent().add(textElement);
         return r;
     }
@@ -121,8 +98,8 @@ public final class Docx4jFactory {
      * @return 超链接连接符
      */
     public static R createNoBreakHyphen() {
-        R r = factory.createR();
-        R.NoBreakHyphen noBreakHyphen = factory.createRNoBreakHyphen();
+        R r = FACTORY.createR();
+        R.NoBreakHyphen noBreakHyphen = FACTORY.createRNoBreakHyphen();
         r.getContent().add(noBreakHyphen);
         return r;
     }

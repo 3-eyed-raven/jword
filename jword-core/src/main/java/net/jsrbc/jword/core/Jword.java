@@ -4,6 +4,7 @@ import net.jsrbc.jword.core.api.JwordOperator;
 import net.jsrbc.jword.core.api.JwordLoader;
 import net.jsrbc.jword.core.document.*;
 import net.jsrbc.jword.core.document.enums.*;
+import net.jsrbc.jword.core.document.visit.DocumentVisitor;
 import net.jsrbc.jword.core.factory.AbstractJwordFactory;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
@@ -65,11 +66,34 @@ public class Jword implements JwordLoader, JwordOperator {
 
     /** {@inheritDoc} */
     @Override
+    public JwordOperator walkBody(DocumentVisitor visitor) {
+        addCommand(() -> this.context.getDocument().walkBody(visitor));
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public JwordOperator walkHeader(DocumentVisitor visitor) {
+        addCommand(() -> this.context.getDocument().walkHeader(visitor));
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public JwordOperator walkFooter(DocumentVisitor visitor) {
+        addCommand(() -> this.context.getDocument().walkFooter(visitor));
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public JwordOperator addText(String text) {
         addCommand(() -> {
             Paragraph p = this.context.getCurrentParagraph();
             if (p == null) throw new IllegalStateException("paragraph is not exists");
-            p.addText(text);
+            Text t = factory.createText();
+            t.setValue(text);
+            p.addText(t);
         });
         return this;
     }
@@ -80,18 +104,20 @@ public class Jword implements JwordLoader, JwordOperator {
         addCommand(() -> {
             Paragraph p = this.context.getCurrentParagraph();
             if (p == null) throw new IllegalStateException("paragraph is not exists");
-            p.addStyledText(styleId, text);
+            Text t = factory.createText();
+            t.setStyleId(styleId);
+            t.setValue(text);
+            p.addText(t);
         });
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public JwordOperator addParagraph(String styleId, String text) {
+    public JwordOperator addParagraph(String styleId) {
         addCommand(() -> {
-            Paragraph paragraph = factory.createParagraph();
+            Paragraph paragraph = this.factory.createParagraph();
             paragraph.setStyleId(styleId);
-            paragraph.addText(text);
             this.context.getDocument().addParagraph(paragraph);
             this.context.setCurrentParagraph(paragraph);
         });
@@ -136,13 +162,16 @@ public class Jword implements JwordLoader, JwordOperator {
 
     /** {@inheritDoc} */
     @Override
-    public JwordOperator addCaptionLabel(String bookmarkName) {
+    public JwordOperator addCaptionLabel(String bookmarkName, String desc) {
         addCommand(() -> {
             CaptionLabel captionLabel = this.context.getCaptionLabel(bookmarkName);
             if (captionLabel == null) throw new NoSuchElementException(String.format("bookmarkName %s is not exists", bookmarkName));
             Paragraph p = this.context.getCurrentParagraph();
             if (p == null) throw new IllegalStateException("paragraph is not exists");
             p.addCaptionLabel(captionLabel);
+            Text text = this.factory.createText();
+            text.setValue("  " + desc);
+            p.addText(text);
         });
         return this;
     }
@@ -222,7 +251,9 @@ public class Jword implements JwordLoader, JwordOperator {
             if (cell == null) throw new IllegalStateException("table cell is not exists");
             Paragraph p = this.factory.createParagraph();
             p.setStyleId(styleId);
-            p.addText(text);
+            Text t = this.factory.createText();
+            t.setValue(text);
+            p.addText(t);
             cell.addParagraph(p);
         });
         return this;
@@ -239,7 +270,9 @@ public class Jword implements JwordLoader, JwordOperator {
             Paragraph p = this.factory.createParagraph();
             p.setStyleId(styleId);
             p.addCaptionLabel(label);
-            p.addText("  " + desc);
+            Text t = this.factory.createText();
+            t.setValue("  " + desc);
+            p.addText(t);
             cell.addParagraph(p);
         });
         return this;
@@ -365,6 +398,12 @@ public class Jword implements JwordLoader, JwordOperator {
                 throw new IllegalStateException("section is not exists");
             section.addFooterReference(id, headerFooterType);
         });
+        return this;
+    }
+
+    @Override
+    public JwordOperator updateTableOfContent() {
+        addCommand(() -> this.context.getDocument().updateTableOfContent());
         return this;
     }
 
