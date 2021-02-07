@@ -65,12 +65,6 @@ public interface Document {
     void updateTableOfContent();
 
     /**
-     * 保存文档
-     * @throws IOException 文件无法打开时报异常
-     */
-    void save() throws IOException;
-
-    /**
      * 另存到目标地址
      * @param dest 目标地址
      * @throws IOException 文件无法打开时报异常

@@ -5,6 +5,7 @@ import net.jsrbc.jword.core.factory.AbstractJwordFactory;
 import net.jsrbc.jword.docx4j.document.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 /**
@@ -18,6 +19,12 @@ public class Docx4jJwordFactory implements AbstractJwordFactory {
     @Override
     public Document loadDocument(Path path) throws IOException {
         return Docx4jDocument.load(path);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Document loadDocument(InputStream in) throws IOException {
+        return Docx4jDocument.load(in);
     }
 
     /** {@inheritDoc} */

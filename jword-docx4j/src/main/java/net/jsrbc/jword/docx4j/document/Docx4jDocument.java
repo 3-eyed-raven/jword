@@ -23,6 +23,7 @@ import org.docx4j.wml.*;
 
 import javax.xml.bind.JAXBElement;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,9 +48,6 @@ public class Docx4jDocument implements Document {
     /** 文档主体 */
     private final MainDocumentPart body;
 
-    /** 源文件 */
-    private final Path source;
-
     /**
      * 加载word文档
      * @param path 文件路径
@@ -59,7 +57,22 @@ public class Docx4jDocument implements Document {
     public static Docx4jDocument load(Path path) throws IOException {
         try {
             WordprocessingMLPackage wml = WordprocessingMLPackage.load(path.toFile());
-            return new Docx4jDocument(wml, path);
+            return new Docx4jDocument(wml);
+        } catch (Docx4JException e) {
+            throw new IOException(e);
+        }
+    }
+
+    /**
+     * 从流加载word文档
+     * @param in 输入流
+     * @return 文档对象
+     * @throws IOException 文件未找到或不可用时抛出异常
+     */
+    public static Docx4jDocument load(InputStream in) throws IOException {
+        try {
+            WordprocessingMLPackage wml = WordprocessingMLPackage.load(in);
+            return new Docx4jDocument(wml);
         } catch (Docx4JException e) {
             throw new IOException(e);
         }
@@ -152,16 +165,6 @@ public class Docx4jDocument implements Document {
 
     /** {@inheritDoc} */
     @Override
-    public void save() throws IOException {
-        try {
-            this.wml.save(this.source.toFile());
-        } catch (Docx4JException e) {
-            throw new IOException(e);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void saveAs(Path dest) throws IOException {
         try {
             this.wml.save(dest.toFile());
@@ -180,10 +183,9 @@ public class Docx4jDocument implements Document {
         }
     }
 
-    private Docx4jDocument(WordprocessingMLPackage wml, Path source) {
+    private Docx4jDocument(WordprocessingMLPackage wml) {
         this.wml = wml;
         this.body = wml.getMainDocumentPart();
-        this.source = source;
     }
 
     /**

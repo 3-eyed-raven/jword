@@ -13,6 +13,7 @@ import reactor.core.publisher.MonoSink;
 import reactor.util.function.Tuple2;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.*;
@@ -55,6 +56,21 @@ public class Jword implements JwordLoader, JwordOperator {
         addCommand(sink -> {
             try {
                 Document document = factory.loadDocument(templatePath);
+                this.context.setDocument(document);
+                sink.success(true);
+            } catch (IOException e) {
+                sink.error(e);
+            }
+        });
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public JwordOperator load(InputStream in) {
+        addCommand(sink -> {
+            try {
+                Document document = factory.loadDocument(in);
                 this.context.setDocument(document);
                 sink.success(true);
             } catch (IOException e) {

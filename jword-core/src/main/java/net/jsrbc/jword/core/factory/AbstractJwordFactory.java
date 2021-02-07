@@ -3,6 +3,7 @@ package net.jsrbc.jword.core.factory;
 import net.jsrbc.jword.core.document.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 /**
@@ -13,12 +14,20 @@ import java.nio.file.Path;
 public interface AbstractJwordFactory {
 
     /**
-     * 创建文档对象
+     * 加载文档对象
      * @param path 模板文件路径
      * @return 文档
      * @throws IOException 文件不存在或无法访问时抛出异常
      */
     Document loadDocument(Path path) throws IOException;
+
+    /**
+     * 加载文档对象
+     * @param in 输入流
+     * @return 文档
+     * @throws IOException 文件不存在或无法访问时抛出异常
+     */
+    Document loadDocument(InputStream in) throws IOException;
 
     /**
      * 创建段落

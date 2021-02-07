@@ -22,8 +22,8 @@ public class Test {
     private final static Path sideImage = Paths.get("C:/Users/ZZZ/Desktop/2.jpg");
 
     public static void main(String[] args) throws Throwable {
-//        test();
-        testRaw();
+        test();
+//        testRaw();
     }
 
     private static void test() throws Exception {

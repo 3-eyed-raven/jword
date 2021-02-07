@@ -1,5 +1,6 @@
 package net.jsrbc.jword.core.api;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 
 /**
@@ -9,9 +10,16 @@ import java.nio.file.Path;
  */
 public interface JwordLoader {
     /**
-     * 从模板加载Jword对象
+     * 从指定路径加载Jword对象
      * @param templatePath 模板路径
      * @return Jword操作器
      */
     JwordOperator load(Path templatePath);
+
+    /**
+     * 从输入流中加载模板文件
+     * @param in 输入流
+     * @return Jword操作器
+     */
+    JwordOperator load(InputStream in);
 }
