@@ -6,14 +6,7 @@ import net.jsrbc.jword.core.document.enums.*;
 import net.jsrbc.jword.core.document.visit.DocumentVisitResult;
 import net.jsrbc.jword.core.document.visit.DocumentVisitor;
 import net.jsrbc.jword.docx4j.factory.Docx4jJwordFactory;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
-import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
-import org.docx4j.openpackaging.parts.relationships.Namespaces;
-import org.docx4j.relationships.Relationship;
-import org.docx4j.wml.ContentAccessor;
 
-import javax.xml.bind.JAXBElement;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -36,6 +29,16 @@ public class Test {
     private static void test() throws Exception {
         Jword.create(new Docx4jJwordFactory())
                 .load(source)
+                .walkHeader(new DocumentVisitor() {
+                    @Override
+                    public DocumentVisitResult visitText(Text text) {
+                        String str = text.getValue();
+                        if (str.contains("报告编号")) {
+                            text.setValue("测试桥梁");
+                        }
+                        return DocumentVisitResult.CONTINUE;
+                    }
+                })
                 .addParagraph("1").addText("GY001 K1+94 GY田唐桥")
                 .addParagraph("2").addText("总体情况")
                 .createCaptionLabel("bridgeTable", "表", "2", "1.1", 1)
@@ -222,12 +225,10 @@ public class Test {
                     @Override
                     public DocumentVisitResult visitText(Text text) {
                         String str = text.getValue();
-                        if (str.contains("报告编号")) {
-                            text.setValue("测试桥梁");
-                        }
+                        System.out.println(str);
                         return DocumentVisitResult.CONTINUE;
                     }
                 })
-                .saveAs(dest, System.out::println, Throwable::printStackTrace, () -> System.out.println("完成"));
+                .read(System.out::println, Throwable::printStackTrace, () -> System.out.println("完成"));
     }
 }

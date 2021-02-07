@@ -9,8 +9,6 @@ import net.jsrbc.jword.core.document.enums.ParagraphJustification;
 import org.docx4j.jaxb.Context;
 import org.docx4j.wml.*;
 
-import static net.jsrbc.jword.docx4j.factory.Docx4jFactory.*;
-
 /**
  * DOCX4J段落
  * @author ZZZ on 2021/1/28 15:29

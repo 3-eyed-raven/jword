@@ -6,7 +6,6 @@ package net.jsrbc.jword.docx4j.util;
  * @version 1.0
  */
 public final class UnitConverter {
-
     /**
      * 厘米转twips
      * @param cmValue 厘米值

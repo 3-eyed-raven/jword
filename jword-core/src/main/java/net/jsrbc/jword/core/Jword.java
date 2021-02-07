@@ -407,6 +407,11 @@ public class Jword implements JwordLoader, JwordOperator {
         return this;
     }
 
+    @Override
+    public void read(Consumer<? super Integer> onProgress, Consumer<? super Throwable> onError, Runnable onComplete) {
+        finish(onProgress, onError, onComplete);
+    }
+
     /** {@inheritDoc} */
     @Override
     public void saveAs(Path dest, Consumer<? super Integer> onProgress, Consumer<? super Throwable> onError, Runnable onComplete) {

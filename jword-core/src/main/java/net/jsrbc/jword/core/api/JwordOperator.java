@@ -212,6 +212,14 @@ public interface JwordOperator {
     JwordOperator updateTableOfContent();
 
     /**
+     * 仅读取文档
+     * @param onProgress 进度事件
+     * @param onError 错误事件
+     * @param onComplete 完成事件
+     */
+    void read(Consumer<? super Integer> onProgress, Consumer<? super Throwable> onError, Runnable onComplete);
+
+    /**
      * 另存文档
      * @param dest 保存路径
      * @param onProgress 进度事件
