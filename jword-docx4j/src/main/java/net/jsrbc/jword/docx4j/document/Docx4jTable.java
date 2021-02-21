@@ -35,9 +35,15 @@ public class Docx4jTable implements Table {
     public void setWidth(double width, TableWidthType type) {
         TblWidth tblWidth = FACTORY.createTblWidth();
         switch (type) {
-            case DXA -> tblWidth.setW(BigInteger.valueOf(cmToTwips(width)));
-            case PCT -> tblWidth.setW(BigInteger.valueOf(percentToFifthPct(width)));
-            default -> tblWidth.setW(BigInteger.ZERO);
+            case DXA:
+                tblWidth.setW(BigInteger.valueOf(cmToTwips(width)));
+                break;
+            case PCT:
+                tblWidth.setW(BigInteger.valueOf(percentToFifthPct(width)));
+                break;
+            default:
+                tblWidth.setW(BigInteger.ZERO);
+                break;
         }
         tblWidth.setType(type.getValue());
         getTblPr().setTblW(tblWidth);

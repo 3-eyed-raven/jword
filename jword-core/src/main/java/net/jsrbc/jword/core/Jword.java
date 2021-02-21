@@ -244,6 +244,24 @@ public class Jword implements JwordLoader, JwordOperator {
 
     /** {@inheritDoc} */
     @Override
+    public JwordOperator addTableCell(double width) {
+        return addTableCell(width, TableWidthType.PCT, VerticalAlignType.CENTER, null, null);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public JwordOperator addTableCell(double width, VerticalMergeType verticalMergeType) {
+        return addTableCell(width, TableWidthType.PCT, VerticalAlignType.CENTER, null, verticalMergeType);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public JwordOperator addTableCell(double width, Integer span) {
+        return addTableCell(width, TableWidthType.PCT, VerticalAlignType.CENTER, span, null);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public JwordOperator addTableCell(double width, TableWidthType widthType, VerticalAlignType alignType, Integer span, VerticalMergeType mergeType) {
         addCommand(() -> {
             TableRow row = this.context.getCurrentRow();

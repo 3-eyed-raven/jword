@@ -118,14 +118,34 @@ public interface JwordOperator {
     JwordOperator addTableRow();
 
     /**
+     * 添加文字单元格至最近一次创建的表格行，垂直居中，无合并
+     * @param width 单元格宽度，百分比宽度
+     */
+    JwordOperator addTableCell(double width);
+
+    /**
+     * 添加文字单元格至最近一次创建的表格行
+     * @param width 单元格宽度，百分比宽度
+     * @param verticalMergeType 单元格行级合并，restart为合并起点
+     */
+    JwordOperator addTableCell(double width, VerticalMergeType verticalMergeType);
+
+    /**
+     * 添加文字单元格至最近一次创建的表格行
+     * @param width 单元格宽度，百分比宽度
+     * @param span 横向合并网格数
+     */
+    JwordOperator addTableCell(double width, Integer span);
+
+    /**
      * 添加文字单元格至最近一次创建的表格行
      * @param width 单元格宽度
      * @param widthType 宽度类型
      * @param alignType 垂直对齐方式
      * @param span 横向合并网格数
-     * @param mergeType 单元格行级合并，restart为合并起点
+     * @param verticalMergeType 单元格行级合并，restart为合并起点
      */
-    JwordOperator addTableCell(double width, TableWidthType widthType, @Nullable VerticalAlignType alignType, @Nullable Integer span, @Nullable VerticalMergeType mergeType);
+    JwordOperator addTableCell(double width, TableWidthType widthType, @Nullable VerticalAlignType alignType, @Nullable Integer span, @Nullable VerticalMergeType verticalMergeType);
 
     /**
      * 添加文字到最近一次添加的单元格

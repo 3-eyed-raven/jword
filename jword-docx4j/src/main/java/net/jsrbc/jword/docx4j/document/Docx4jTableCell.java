@@ -30,9 +30,15 @@ public class Docx4jTableCell implements TableCell {
     public void setCellWidth(double width, TableWidthType type) {
         TblWidth tcW = FACTORY.createTblWidth();
         switch (type) {
-            case DXA -> tcW.setW(BigInteger.valueOf(cmToTwips(width)));
-            case PCT -> tcW.setW(BigInteger.valueOf(percentToFifthPct(width)));
-            default -> tcW.setW(BigInteger.ZERO);
+            case DXA:
+                tcW.setW(BigInteger.valueOf(cmToTwips(width)));
+                break;
+            case PCT:
+                tcW.setW(BigInteger.valueOf(percentToFifthPct(width)));
+                break;
+            default:
+                tcW.setW(BigInteger.ZERO);
+                break;
         }
         tcW.setType(type.getValue());
         getTcPr().setTcW(tcW);

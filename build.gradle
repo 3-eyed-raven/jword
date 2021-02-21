@@ -12,17 +12,7 @@ subprojects {
     //Gradle配置完成后的回调
     afterEvaluate {
         //jdk版本管理
-        sourceCompatibility = JavaVersion.VERSION_15
-        //定义模块化
-        compileJava {
-            inputs.property("moduleName", moduleName)
-            doFirst {
-                options.compilerArgs = [
-                        "--module-path", classpath.asPath
-                ]
-                classpath = files()
-            }
-        }
+        sourceCompatibility = JavaVersion.VERSION_1_8
         //公共仓库，本地和阿里云优先
         repositories {
             mavenLocal()
