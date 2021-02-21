@@ -1,6 +1,4 @@
-ext.moduleName = "net.jsrbc.jword.docx4j"
-
 dependencies {
     implementation project(":jword-core")
-    implementation('org.docx4j:docx4j-JAXB-ReferenceImpl:8.2.8')
+    implementation 'org.docx4j:docx4j-JAXB-ReferenceImpl:8.2.8'
 }
