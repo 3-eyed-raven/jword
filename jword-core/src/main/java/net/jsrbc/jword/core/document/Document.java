@@ -65,6 +65,12 @@ public interface Document {
     void updateTableOfContent();
 
     /**
+     * 合并文档
+     * @param document 需要合并进来的文档
+     */
+    void mergeWith(Document document);
+
+    /**
      * 另存到目标地址
      * @param dest 目标地址
      * @throws IOException 文件无法打开时报异常
@@ -77,4 +83,9 @@ public interface Document {
      * @throws IOException 文件无法打开时报异常
      */
     void saveAs(OutputStream dest) throws IOException;
+
+    /**
+     * 保存为网页格式
+     */
+    void saveAsHTML() throws IOException;
 }

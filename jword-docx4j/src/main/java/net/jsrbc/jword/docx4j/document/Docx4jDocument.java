@@ -165,6 +165,12 @@ public class Docx4jDocument implements Document {
 
     /** {@inheritDoc} */
     @Override
+    public void mergeWith(Document document) {
+        throw new UnsupportedOperationException("mergeWith is not yet supported");
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void saveAs(Path dest) throws IOException {
         try {
             this.wml.save(dest.toFile());
@@ -181,6 +187,12 @@ public class Docx4jDocument implements Document {
         } catch (Docx4JException e) {
             throw new IOException(e);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void saveAsHTML() throws IOException {
+        throw new UnsupportedOperationException("save as HTMl is not yet supported");
     }
 
     private Docx4jDocument(WordprocessingMLPackage wml) {
